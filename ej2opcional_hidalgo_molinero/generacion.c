@@ -90,7 +90,7 @@ void asignar(FILE* fpasm, char* nombre, int es_variable) {
 
 void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
   if(!fpasm || (es_variable1!=0 && es_variable1!=1) || (es_variable2!=0 && es_variable2!=1)) {
-    printf("distinto");
+    printf("igual");
     return;
   }
   fprintf(fpasm, "pop dword edx\n");
@@ -110,12 +110,34 @@ void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
   fprintf(fpasm, "fin_igual_%d:\n", etiqueta);
 }
 
+void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 
+  if(!fpasm || (es_variable1!=0 && es_variable1!=1) || (es_variable2!=0 && es_variable2!=1)) {
+    printf("distinto");
+    return;
+  }
+  fprintf(fpasm, "pop dword edx\n");
+  fprintf(fpasm, "pop dword eax\n");
+  if(es_variable1 == 1){
+    fprintf(fpasm, "mov dword eax, [eax]\n");
+  }
+  if(es_variable2 == 1){
+    fprintf(fpasm, "mov dword edx, [edx]\n");
+  }
+  fprintf(fpasm, "cmp dword eax, edx\n");
+  fprintf(fpasm, "jne near distinto_%d\n", etiqueta);
+  fprintf(fpasm, "push dword 0\n");
+  fprintf(fpasm, "jmp near fin_distinto_%d\n", etiqueta);
+  fprintf(fpasm, "distinto_%d:\n", etiqueta);
+  fprintf(fpasm, "push dword 1\n");
+  fprintf(fpasm, "fin_distinto_%d:\n", etiqueta);
+
+}
 
 
 void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
    if(!fpasm || (es_variable1!=0 && es_variable1!=1) || (es_variable2!=0 && es_variable2!=1)) {
-     printf("distinto");
+     printf("mayor");
      return;
    }
    fprintf(fpasm, "pop dword edx\n");
@@ -134,6 +156,79 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
    fprintf(fpasm, "push dword 1\n");
    fprintf(fpasm, "fin_mayor_%d:\n", etiqueta);
 }
+
+void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+   if(!fpasm || (es_variable1!=0 && es_variable1!=1) || (es_variable2!=0 && es_variable2!=1)) {
+     printf("menor");
+     return;
+   }
+   fprintf(fpasm, "pop dword edx\n");
+   fprintf(fpasm, "pop dword eax\n");
+   if(es_variable1 == 1){
+     fprintf(fpasm, "mov dword eax, [eax]\n");
+   }
+   if(es_variable2 == 1){
+     fprintf(fpasm, "mov dword edx, [edx]\n");
+   }
+   fprintf(fpasm, "cmp dword eax, edx\n");
+   fprintf(fpasm, "jl near menor_%d\n", etiqueta);
+   fprintf(fpasm, "push dword 0\n");
+   fprintf(fpasm, "jmp near fin_menor_%d\n", etiqueta);
+   fprintf(fpasm, "menor_%d:\n", etiqueta);
+   fprintf(fpasm, "push dword 1\n");
+   fprintf(fpasm, "fin_menor_%d:\n", etiqueta);
+}
+
+void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+
+  if(!fpasm || (es_variable1!=0 && es_variable1!=1) || (es_variable2!=0 && es_variable2!=1)) {
+    printf("mayorigual");
+    return;
+  }
+  fprintf(fpasm, "pop dword edx\n");
+  fprintf(fpasm, "pop dword eax\n");
+  if(es_variable1 == 1){
+    fprintf(fpasm, "mov dword eax, [eax]\n");
+  }
+  if(es_variable2 == 1){
+    fprintf(fpasm, "mov dword edx, [edx]\n");
+  }
+  fprintf(fpasm, "cmp dword eax, edx\n");
+  fprintf(fpasm, "jge near mayorigual_%d\n", etiqueta);
+  fprintf(fpasm, "push dword 0\n");
+  fprintf(fpasm, "jmp near fin_mayorigual_%d\n", etiqueta);
+  fprintf(fpasm, "mayorigual_%d:\n", etiqueta);
+  fprintf(fpasm, "push dword 1\n");
+  fprintf(fpasm, "fin_mayorigual_%d:\n", etiqueta);
+
+}
+
+void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+
+  if(!fpasm || (es_variable1!=0 && es_variable1!=1) || (es_variable2!=0 && es_variable2!=1)) {
+    printf("menorigual");
+    return;
+  }
+  fprintf(fpasm, "pop dword edx\n");
+  fprintf(fpasm, "pop dword eax\n");
+  if(es_variable1 == 1){
+    fprintf(fpasm, "mov dword eax, [eax]\n");
+  }
+  if(es_variable2 == 1){
+    fprintf(fpasm, "mov dword edx, [edx]\n");
+  }
+  fprintf(fpasm, "cmp dword eax, edx\n");
+  fprintf(fpasm, "jle near menorigual_%d\n", etiqueta);
+  fprintf(fpasm, "push dword 0\n");
+  fprintf(fpasm, "jmp near fin_menorigual_%d\n", etiqueta);
+  fprintf(fpasm, "menorigual_%d:\n", etiqueta);
+  fprintf(fpasm, "push dword 1\n");
+  fprintf(fpasm, "fin_menorigual_%d:\n", etiqueta);
+
+}
+
+
+
 
 void leer(FILE* fpasm, char* nombre, int tipo) {
   if(!fpasm || !nombre) {
@@ -323,5 +418,65 @@ void asignarDestinoEnPila(FILE* fpasm, int es_variable) {
       fprintf(fpasm, "mov dword eax, [eax]\n");
    }
    fprintf(fpasm, "mov dword [ebx], eax\n");
+
+}
+
+
+void declararFuncion(FILE * fpasm, char * nombre_funcion, int num_var_loc) {
+
+  fprintf(fpasm, "_%s:\n", nombre_funcion);
+  fprintf(fpasm, "push ebp\n");
+  fprintf(fpasm, "mov ebp, esp\n");
+  fprintf(fpasm, "sub esp, %d\n", 4*num_var_loc);
+
+}
+
+void retornarFuncion(FILE * fpasm, int es_variable) {
+
+  fprintf(fpasm, "pop eax\n");
+  if(es_variable == 1){
+    fprintf(fpasm, "mov dword eax, [eax]\n");
+  }
+  fprintf(fpasm, "mov esp, ebp\n");
+  fprintf(fpasm, "pop ebp\n");
+  fprintf(fpasm, "ret\n");
+
+}
+
+void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros) {
+  int d_ebp;
+  d_ebp = 4*(1 + (num_total_parametros - pos_parametro));
+  fprintf(fpsam, "lea eax, [ebp + %d]\n", d_ebp);
+  fprintf(fpasm, "push dword eax\n");
+
+}
+
+void escribirVariableLocal(FILE* fpasm, int posicion_variable_local) {
+  int d_ebp;
+  d_ebp = 4*posicion_variable_local;
+  fprintf(fpsam, "lea eax, [ebp - %d]\n", d_ebp);
+  fprintf(fpasm, "push dword eax\n");
+
+}
+
+void operandoEnPilaAArgumento(FILE * fpasm, int es_variable) {
+
+  if(es_variable == 1) {
+    fprintf(fpasm, "pop eax\n");
+    fprintf(fpasm, "mov eax, [eax]\n");
+    fprintf(fpasm, "push eax\n");
+  }
+
+}
+
+void llamarFuncion(FILE * fpasm, char * nombre_funcion, int num_argumentos) {
+
+  fprintf(fpasm, "call %s\n", nombre_funcion);
+  fprintf(fpasm, "add esp, %d\n", num_argumentos*4);
+  fprintf(fpasm, "push dword eax\n");
+
+}
+
+void limpiarPila(FILE * fpasm, int num_argumentos) {
 
 }
