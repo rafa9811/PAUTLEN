@@ -13,18 +13,21 @@ void escribir_cabecera_bss(FILE* fpasm) {
 }
 
 
+
 void declarar_variable(FILE* fpasm, char* nombre,  int tipo,  int tamano) {
   if(!fpasm || !nombre) {
     printf("declarar variable");
 	  return;
   }
-  fprintf(fpasm,"%s ", nombre);
+  fprintf(fpasm,"_%s ", nombre);
   if(tipo == ENTERO || tipo == BOOLEANO) {
     fprintf(fpasm, "resd ");
   }
   fprintf(fpasm, "%d", tamano);
+  fprintf(fpasm, "\n");
   return;
 }
+
 
 
 void escribir_segmento_codigo(FILE* fpasm) {
@@ -43,7 +46,8 @@ void escribir_subseccion_data(FILE* fpasm) {
     printf("escribir segmento data");
     return;
   }
-  fprintf(fpasm, "%s", "Mensaje1 db “División por cero”, 0\n");
+  fprintf(fpasm, "%s", "segment .data\n");
+  fprintf(fpasm, "%s", "Mensaje1 db \"División por cero\",0\n");
 }
 
 
@@ -97,7 +101,7 @@ void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
   if(es_variable2 == 1){
     fprintf(fpasm, "mov dword edx, [edx]\n");
   }
-  fprintf(fpasm, "cmp dword eax edx\n");
+  fprintf(fpasm, "cmp dword eax, edx\n");
   fprintf(fpasm, "je near igual_%d\n", etiqueta);
   fprintf(fpasm, "push dword 0\n");
   fprintf(fpasm, "jmp near fin_igual_%d\n", etiqueta);
@@ -122,7 +126,7 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
    if(es_variable2 == 1){
      fprintf(fpasm, "mov dword edx, [edx]\n");
    }
-   fprintf(fpasm, "cmp dword eax edx\n");
+   fprintf(fpasm, "cmp dword eax, edx\n");
    fprintf(fpasm, "jg near mayor_%d\n", etiqueta);
    fprintf(fpasm, "push dword 0\n");
    fprintf(fpasm, "jmp near fin_mayor_%d\n", etiqueta);
@@ -136,19 +140,20 @@ void leer(FILE* fpasm, char* nombre, int tipo) {
     printf("leer");
 	  return;
   }
-  fprintf(fpasm, "push dword %s\n", nombre);
+  fprintf(fpasm, "push dword _%s\n", nombre);
   if(tipo == ENTERO){
     fprintf(fpasm, "call scan_int\n");
   } else {
     fprintf(fpasm, "call scan_boolean\n");
     //Entiendo que se limpia pila almacenando en eax
   }
-  fprintf(fpasm, "pop dword eax\n");
+  fprintf(fpasm, "add dword esp, 4\n");
 }
 
 
+
 void escribir(FILE* fpasm, int es_variable, int tipo) {
-  if(!fpasm || (es_variable!=0 || es_variable!=1)) {
+  if(!fpasm || (es_variable!=0 && es_variable!=1)) {
     printf("escribir");
   	return;
   }
@@ -156,20 +161,22 @@ void escribir(FILE* fpasm, int es_variable, int tipo) {
   //hago el push para que almacene el valor, que es lo que espera recibir print.
   fprintf(fpasm, "pop dword eax\n");
   if(es_variable == 1) {
-    fprintf(fpasm, "push dword [_eax]\n");
+    fprintf(fpasm, "mov dword eax, [eax]\n");
+    fprintf(fpasm, "push dword eax\n");
   }
   else {
     fprintf(fpasm, "push dword eax\n");
   }
   if(tipo == ENTERO) {
     fprintf(fpasm, "call print_int\n");
+    fprintf(fpasm, "call print_endofline\n");
   }
   else {
     fprintf(fpasm, "call print_boolean\n");
+    fprintf(fpasm, "call print_endofline\n");
   }
-  fprintf(fpasm, "pop dword eax\n");
+  fprintf(fpasm, "add dword esp, 4\n");
 }
-
 
 void sumar(FILE* fpasm, int es_variable1, int es_variable2) {
   if(!fpasm || (es_variable1!=0 || es_variable1!=1) || (es_variable2!=0 || es_variable2!=1)) {
@@ -205,22 +212,22 @@ void suma_iterativa(FILE *fpasm, char *nombre1, char *nombre2) {
   //Lo primero que hacemos es leer de teclado dos operandos
   leer(fpasm, nombre1, ENTERO);
   leer(fpasm, nombre2, ENTERO);
-  escribir_operando(fpasm, nombre1, 1);
-  fprintf(fpasm, "mov dword eax, [_nombre1]\n");
+  fprintf(fpasm, "mov dword eax, [_%s]\n", nombre1);
   //Etiqueta para cuando acabemos el programa.
-  fprintf(fpasm, "acabar:\n");
+
   //Etiqueta para cuando queremos seguir porque no introducimos cero.
   fprintf(fpasm, "seguir_comprobando:\n");
-  fprintf(fpasm, "mov dword edx, [_nombre2]\n");
-  fprintf(fpasm, "cmp dword edx 0\n");
-  fprintf(fpasm, "jne acabar\n");
+  fprintf(fpasm, "mov dword edx, [_%s]\n", nombre2);
+  fprintf(fpasm, "cmp dword edx, 0\n");
+  fprintf(fpasm, "je acabar\n");
   //Ahora sumamos:
-  fprintf(fpasm, "add eax edx\n");
+  fprintf(fpasm, "add eax, edx\n");
   fprintf(fpasm, "push dword eax\n");
   escribir(fpasm, 0, ENTERO);
   leer(fpasm, nombre2, ENTERO);
   fprintf(fpasm,"jmp seguir_comprobando\n");
-  escribir_fin(fpasm);
+  fprintf(fpasm, "acabar:\n");
+
 }
 
 
@@ -264,13 +271,13 @@ void ifthenelse_fin_then( FILE * fpasm, int etiqueta) {
 
 void ifthenelse_fin( FILE * fpasm, int etiqueta) {
 
-   fprintf(fpasm, "fin_ifelse_%d\n", etiqueta);
+   fprintf(fpasm, "fin_ifelse_%d:\n", etiqueta);
 
 }
 
 void while_inicio(FILE * fpasm, int etiqueta) {
 
-   fprintf(fpasm, "inicio_while_%d\n", etiqueta);
+   fprintf(fpasm, "inicio_while_%d:\n", etiqueta);
 
 }
 
@@ -288,7 +295,7 @@ void while_exp_pila(FILE * fpasm, int exp_es_variable, int etiqueta) {
 void while_fin( FILE * fpasm, int etiqueta) {
 
    fprintf(fpasm, "jmp near inicio_while_%d\n", etiqueta);
-   fprintf(fpasm, "jmp while_fin_%d:\n", etiqueta);
+   fprintf(fpasm, "fin_while_%d:\n", etiqueta);
 
 }
 

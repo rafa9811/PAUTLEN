@@ -47,7 +47,7 @@ int main (int argc, char** argv)
   while_exp_pila(salida, 0, etiqueta);
   //AHora hacemos lo que está dentro del while
   leer(salida, "x", ENTERO);
-  escribir_operando(salida, "b1", 1);
+  escribir_operando(salida, "x", 1);
   escribir_operando(salida, "4", 0);
   mayor(salida,1, 0, etiqueta);
   asignar(salida, "b1", 0);
