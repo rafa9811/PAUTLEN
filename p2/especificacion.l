@@ -1,7 +1,6 @@
  /*Sección de definiciones*/
 
 %{
-#include <stdio.h>
 #include "tokens.h"
 int ncol = 0;
 int nlin = 0;
@@ -28,7 +27,7 @@ return {ncol+=yyleng; return TOK_RETURN;}
 
 
 ";" {ncol+=yyleng; return TOK_PUNTOYCOMA;}
-"," {ncol+=yyleng; return TOK_PUNTOYCOMA;}
+"," {ncol+=yyleng; return TOK_COMA;}
 "(" {ncol+=yyleng; return TOK_PARENTESISIZQUIERDO;}
 ")" {ncol+=yyleng; return TOK_PARENTESISDERECHO;}
 "[" {ncol+=yyleng; return TOK_CORCHETEIZQUIERDO;}
@@ -56,11 +55,11 @@ return {ncol+=yyleng; return TOK_RETURN;}
 \t {ncol++;}
 \n {nlin++;}
 "//".*\n {ncol+=yyleng; nlin++;}
-
-[A-Za-z][A-Za-z0-9]* {ncol+=yyleng; return TOK_IDENTIFICADOR;}
 true {ncol+=yyleng; return TOK_TRUE;}
 false {ncol+=yyleng; return TOK_FALSE;}
+[A-Za-z][A-Za-z0-9]{0,99} {ncol+=yyleng; return TOK_IDENTIFICADOR;}
+[A-Za-z][A-Za-z0-9]{100,1000} {ncol+=yyleng; return TOK_ERROR;}
 [0-9]+ {ncol+=yyleng; return TOK_CONSTANTE_ENTERA;}
 
-.* {ncol+=yyleng; return TOK_ERROR;}
+. {ncol+=yyleng; return TOK_ERROR;}
 %%

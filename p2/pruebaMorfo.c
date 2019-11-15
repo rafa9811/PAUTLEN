@@ -1,11 +1,10 @@
 #include "tokens.h"
 #include <stdio.h>
-#include "lex.yy.c"
-// int yylex();
+int yylex();
 
 
 int main(int argc, char** argv){
-   extern yy_size_t yyleng;
+   extern int yyleng;
    extern int nlin, ncol;
    extern FILE* yyin;
    extern char* yytext;
@@ -22,9 +21,13 @@ int main(int argc, char** argv){
    yyin = fentrada;
    //Damos valor inicial para que entre en el bucle:
    leido = 1;
+   printf("HOL\n");
    //Si lo que hemos leído es cero, es que hemos terminado.
    while(leido != 0){
+     printf("Ey\n");
       leido = yylex();
+      printf("%d\n", leido);
+      printf("%s\n",yytext);
 
       switch(leido){
       case TOK_MAIN:
@@ -191,12 +194,12 @@ int main(int argc, char** argv){
          else{
             fprintf(stderr, "TOK_ERROR: CADENA NO RECONOCIDA en línea %d, columna %d\n", nlin, ncol);
          }
-         break;
+         return 0;
 
       default:
          break;
       }
-
+    }
       fclose(fentrada);
       fclose(fsalida);
 
@@ -204,6 +207,6 @@ int main(int argc, char** argv){
 
 
 
-   }
+
 
 }
