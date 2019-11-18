@@ -1738,13 +1738,13 @@ case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
 #line 56 "especificacion.l"
-{nlin++;}
+{nlin++;ncol=0;}
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
 #line 57 "especificacion.l"
-{ncol+=yyleng; nlin++;}
+{ncol=0; nlin++;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP

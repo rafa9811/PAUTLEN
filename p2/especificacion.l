@@ -53,8 +53,8 @@ return {ncol+=yyleng; return TOK_RETURN;}
 
 " " {ncol++;}
 \t {ncol++;}
-\n {nlin++;}
-"//".*\n {ncol+=yyleng; nlin++;}
+\n {nlin++;ncol=0;}
+"//".*\n {ncol=0; nlin++;}
 true {ncol+=yyleng; return TOK_TRUE;}
 false {ncol+=yyleng; return TOK_FALSE;}
 [A-Za-z][A-Za-z0-9]{0,99} {ncol+=yyleng; return TOK_IDENTIFICADOR;}

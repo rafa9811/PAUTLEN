@@ -13,6 +13,7 @@ int main(int argc, char** argv){
    int leido;
    if (argc!=3){
       fprintf(stderr, "Error en el número de parámetros de entrada");
+      return -1;
    }
    entrada = argv[1];
    salida = argv[2];
@@ -21,13 +22,12 @@ int main(int argc, char** argv){
    yyin = fentrada;
    //Damos valor inicial para que entre en el bucle:
    leido = 1;
-   printf("HOL\n");
    //Si lo que hemos leído es cero, es que hemos terminado.
    while(leido != 0){
-     printf("Ey\n");
       leido = yylex();
       printf("%d\n", leido);
       printf("%s\n",yytext);
+      printf("%d\n", ncol);
 
       switch(leido){
       case TOK_MAIN:
