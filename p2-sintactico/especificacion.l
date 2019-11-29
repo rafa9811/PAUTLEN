@@ -1,9 +1,11 @@
  /*Sección de definiciones*/
 
 %{
-#include "tokens.h"
+#include "y.tab.h"
 int ncol = 0;
 int nlin = 0;
+int is_morpho = 0;
+void yyerror(const char * s);
 %}
 
 %option noyywrap
@@ -58,8 +60,9 @@ return {ncol+=yyleng; return TOK_RETURN;}
 true {ncol+=yyleng; return TOK_TRUE;}
 false {ncol+=yyleng; return TOK_FALSE;}
 [A-Za-z][A-Za-z0-9]{0,99} {ncol+=yyleng; return TOK_IDENTIFICADOR;}
-[A-Za-z][A-Za-z0-9]{100,1000} {ncol+=yyleng; return TOK_ERROR;}
+[A-Za-z][A-Za-z0-9]{100,} {ncol+=yyleng; is_morpho =1; return TOK_ERROR;}
 [0-9]+ {ncol+=yyleng; return TOK_CONSTANTE_ENTERA;}
 
-. {ncol+=yyleng; return TOK_ERROR;}
+. {ncol+=yyleng; is_morpho = 1; printf("****Error sintactico en [lin %d, col %d]\n", nlin, ncol);
+  return TOK_ERROR;}
 %%

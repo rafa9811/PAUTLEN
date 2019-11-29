@@ -1,11 +1,15 @@
 /* SECCION DE DEFINICIONES */
 %{
 #include <stdio.h>
+int yylex();
+void yyerror(const char * s);
+extern FILE *out;
+extern int nlin;
+extern int ncol;
+extern int is_morpho;
 %}
 
 /* Palabras reservadas */
-%token TOK_MAIN
-%token TOK_INT
 %token TOK_MAIN
 %token TOK_INT
 %token TOK_BOOLEAN
@@ -17,6 +21,7 @@
 %token TOK_SCANF
 %token TOK_PRINTF
 %token TOK_RETURN
+%token TOK_ERROR
 
 /* Simbolos */
 %token TOK_PUNTOYCOMA
@@ -54,6 +59,7 @@
 
 %left TOK_MAS TOK_MENOS
 %left TOK_ASTERISCO TOK_DIVISION
+%left TOK_NOT
 %%
 
 /* SECCION DE REGLAS */
@@ -107,7 +113,7 @@ bloque: condicional {fprintf(out, ";R40:\t<bloque> ::= <condicional>\n");}
       | bucle {fprintf(out, ";R41:\t<bloque> ::= <bucle>\n");}
 	;
 asignacion: identificador TOK_IGUAL exp {fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
-          | elemento vector TOK_IGUAL exp {fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
+          | elemento_vector TOK_IGUAL exp {fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
 	;
 elemento_vector: identificador TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {fprintf(out, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");}
 	;
@@ -164,6 +170,6 @@ identificador: TOK_IDENTIFICADOR {fprintf(out, ";R106:\t<identificador> ::= TOK_
 
 void yyerror(const char * s) {
     if(!is_morpho) {
-        printf("****Error sintactico en [lin %ld, col %ld]\n", num_lin, num_col);
+        printf("****Error sintactico en [lin %d, col %d]\n", nlin, ncol);
     }
 }
