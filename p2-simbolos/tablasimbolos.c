@@ -21,7 +21,6 @@ int interactuarTabla(char *buffer){
   printf("token1: %s token2: %s \n", token1, token2);
   //Lo primero que hemos de hacer es comprobar si estamos en ámbito local.
   if(flaglocal == 1){
-    printf("hddhhddh\n");
     //En este caso, tenemos que interactuar con la tabla hash local.
     //Hemos de observar si token2 es NULL.
     if(token2 == NULL){
@@ -45,7 +44,7 @@ int interactuarTabla(char *buffer){
         flaglocal = 0;
         //TODO liberar memoria del hash_local. De momento hacemos solo free del puntero.
         free(hash_local);
-        fprintf(out, "cierre");
+        fprintf(out, "cierre\n");
       }
       else{
         //En este caso tan solo hemos de insertar en la tabla local.
@@ -63,7 +62,6 @@ int interactuarTabla(char *buffer){
     }
   }
   else{
-    printf("ososososo\n");
     //En este caso estamos en la tabla global.
     //Hemos de observar si token2 es NULL.
     if(token2 == NULL){
@@ -72,46 +70,33 @@ int interactuarTabla(char *buffer){
       //Si es NULL, hemos de realizar búsqueda en la tabla global.
       resultado = ht_get(hash_global, token1);
       fprintf(out, "%s -1\n", token1);
-      fflush(out);
       if(resultado == NULL){
 
         //Hemos de imprimir fallo de búsqueda.
 
       }
       else{
-        printf("SHDHDHD");
-        fflush(stdout);
         //Imprimimos éxito en la búsqueda.
         fprintf(out, "%s 1\n", resultado);
-        fflush(out);
       }
     }
 
     else{
-      printf("HEEEYE\n");
 
-      printf("JSJSJSJ %d\n",atoi(token2));
       //Si no es NULL, es decir, hemos recibido un número, identificador, es porque hemos de insertar en
       //la tabla global o crear un ámbito local. Comprobaremos esto mirando si es positivo o negativo.
       if(atoi(token2)>0){
-        printf("Esposii\n");
         resultado_int = ht_set( hash_global, token1, token2 );
         printf("resultado : %d\n", resultado_int);
-        printf("hdhdhf xxx\n");
         //Comprobamos si ha habido error en la inserción porque ya existía en la tabla.
         if(resultado_int == -1){
           //Hemos de imprimir fallo de inserción.
-          printf("VOy fjvj");
-          fflush(stdout);
-          fflush(out);
           fprintf(out, "-1 %s\n", token1);
-          fflush(out);
         }
         else{
           //Si no ha habido fallo en la inserción, imprimimos con éxito.
 
           fprintf(out, "%s\n", token1);
-          fflush(out);
         }
       }
 
