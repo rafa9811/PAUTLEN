@@ -112,8 +112,8 @@ sentencia_simple: asignacion {fprintf(out, ";R34:\t<sentencia_simple> ::= <asign
 bloque: condicional {fprintf(out, ";R40:\t<bloque> ::= <condicional>\n");}
       | bucle {fprintf(out, ";R41:\t<bloque> ::= <bucle>\n");}
 	;
-asignacion: identificador TOK_IGUAL exp {fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
-          | elemento_vector TOK_IGUAL exp {fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
+asignacion: identificador TOK_ASIGNACION exp {fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
+          | elemento_vector TOK_ASIGNACION exp {fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
 	;
 elemento_vector: identificador TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {fprintf(out, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");}
 	;
