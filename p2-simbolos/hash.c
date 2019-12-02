@@ -91,7 +91,7 @@ entry_t *ht_newpair( char *key, char *value ) {
 }
 
 /* Insert a key-value pair into a hash table. */
-void ht_set( hashtable_t *hashtable, char *key, char *value ) {
+int ht_set( hashtable_t *hashtable, char *key, char *value ) {
 	int bin = 0;
 	entry_t *newpair = NULL;
 	entry_t *next = NULL;
@@ -109,8 +109,7 @@ void ht_set( hashtable_t *hashtable, char *key, char *value ) {
 	/* There's already a pair.  Let's replace that string. */
 	if( next != NULL && next->key != NULL && strcmp( key, next->key ) == 0 ) {
 
-		free( next->value );
-		next->value = strdup( value );
+		return -1;
 
 	/* Nope, could't find it.  Time to grow a pair. */
 	} else {
@@ -130,6 +129,7 @@ void ht_set( hashtable_t *hashtable, char *key, char *value ) {
 			newpair->next = next;
 			last->next = newpair;
 		}
+	return 0;
 	}
 }
 
@@ -156,20 +156,20 @@ char *ht_get( hashtable_t *hashtable, char *key ) {
 
 }
 
-
-int main( int argc, char **argv ) {
-
-	hashtable_t *hashtable = ht_create( 65536 );
-
-	ht_set( hashtable, "key1", "inky" );
-	ht_set( hashtable, "key2", "pinky" );
-	ht_set( hashtable, "key3", "blinky" );
-	ht_set( hashtable, "key4", "floyd" );
-
-	printf( "%s\n", ht_get( hashtable, "key1" ) );
-	printf( "%s\n", ht_get( hashtable, "key2" ) );
-	printf( "%s\n", ht_get( hashtable, "key3" ) );
-	printf( "%s\n", ht_get( hashtable, "key4" ) );
-
-	return 0;
-}
+// 
+// int main( int argc, char **argv ) {
+//
+// 	hashtable_t *hashtable = ht_create( 65536 );
+//
+// 	ht_set( hashtable, "key1", "inky" );
+// 	ht_set( hashtable, "key2", "pinky" );
+// 	ht_set( hashtable, "key3", "blinky" );
+// 	ht_set( hashtable, "key4", "floyd" );
+//
+// 	printf( "%s\n", ht_get( hashtable, "key1" ) );
+// 	printf( "%s\n", ht_get( hashtable, "key2" ) );
+// 	printf( "%s\n", ht_get( hashtable, "key3" ) );
+// 	printf( "%s\n", ht_get( hashtable, "key4" ) );
+//
+// 	return 0;
+// }
