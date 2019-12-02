@@ -68,7 +68,7 @@ programa: TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones funciones sentencias TOK_LLA
 declaraciones: declaracion {fprintf(out, ";R2:\t<declaraciones> ::= <declaracion>\n");}
              | declaracion declaraciones {fprintf(out, ";R3:\t<declaraciones> ::= <declaracion> <declaraciones>\n");}
 	;
-declaracion: clase identificadores {fprintf(out, ";R4:\t<declaracion> ::= <clase> <identificadores>\n");}
+declaracion: clase identificadores TOK_PUNTOYCOMA {fprintf(out, ";R4:\t<declaracion> ::= <clase> <identificadores> ;\n");}
 	;
 clase: clase_escalar {fprintf(out, ";R5:\t<clase> ::= <clase_escalar>\n");}
      | clase_vector {fprintf(out, ";R7:\t<clase> ::= <clase_vector>\n");}
@@ -81,7 +81,7 @@ tipo: TOK_INT {fprintf(out, ";R10:\t<tipo> ::= int\n");}
 clase_vector: TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_entera TOK_CORCHETEDERECHO {fprintf(out, ";R15:\t<clase_vector> ::= array <tipo> [<constante_entera]\n");}
 	;
 identificadores: identificador {fprintf(out, ";R18:\t<identificadores> ::= <identificador>\n");}
-               | identificador TOK_COMA identificadores {fprintf(out, ";R19:\t<identificadores> ::= <identificador>\n");}
+               | identificador TOK_COMA identificadores {fprintf(out, ";R19:\t<identificadores> ::= <identificador> , <identificadores>\n");}
 	;
 funciones: funcion funciones {fprintf(out, ";R20:\t<funciones> ::= <funcion> <funciones>\n");}
          | {fprintf(out, ";R21:\t<funciones> ::= \n");}
@@ -101,7 +101,7 @@ declaraciones_funcion: declaraciones {fprintf(out, ";R28:\t<declaraciones_funcio
 sentencias: sentencia {fprintf(out, ";R30:\t<sentencias> ::= <sentencia>\n");}
           | sentencia sentencias {fprintf(out, ";R31:\t<sentencias> ::= <sentencia> <sentencias>\n");}
 	;
-sentencia: sentencia_simple TOK_PUNTOYCOMA {fprintf(out, ";R32:\t<sentencia> ::= <sentencia_simple>;\n");}
+sentencia: sentencia_simple TOK_PUNTOYCOMA {fprintf(out, ";R32:\t<sentencia> ::= <sentencia_simple> ;\n");}
          | bloque {fprintf(out, ";R33:\t<sentencia> ::= <bloque>\n");}
 	;
 sentencia_simple: asignacion {fprintf(out, ";R34:\t<sentencia_simple> ::= <asignacion>\n");}
@@ -164,7 +164,7 @@ constante_logica: TOK_TRUE {fprintf(out, ";R102:\t<constante_logica> ::= true\n"
 	;
 constante_entera: TOK_CONSTANTE_ENTERA {fprintf(out, ";R104:\t<constante_entera> ::= TOK_CONSTANTE_ENTERA\n");}
 	;
-identificador: TOK_IDENTIFICADOR {fprintf(out, ";R106:\t<identificador> ::= TOK_IDENTIFICADOR\n");}
+identificador: TOK_IDENTIFICADOR {fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");}
 	;
 %%
 
