@@ -3,13 +3,8 @@
  *
  *  -- T.
  */
+ #include "hash.h"
 
-#define _XOPEN_SOURCE 500 /* Enable certain library functions (strdup) on linux.  See feature_test_macros(7) */
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <limits.h>
-#include <string.h>
 
 struct entry_s {
 	char *key;
@@ -17,14 +12,14 @@ struct entry_s {
 	struct entry_s *next;
 };
 
-typedef struct entry_s entry_t;
+
 
 struct hashtable_s {
 	int size;
 	struct entry_s **table;
 };
 
-typedef struct hashtable_s hashtable_t;
+
 
 
 /* Create a new hashtable. */
@@ -92,6 +87,7 @@ entry_t *ht_newpair( char *key, char *value ) {
 
 /* Insert a key-value pair into a hash table. */
 int ht_set( hashtable_t *hashtable, char *key, char *value ) {
+
 	int bin = 0;
 	entry_t *newpair = NULL;
 	entry_t *next = NULL;
@@ -113,7 +109,9 @@ int ht_set( hashtable_t *hashtable, char *key, char *value ) {
 
 	/* Nope, could't find it.  Time to grow a pair. */
 	} else {
+
 		newpair = ht_newpair( key, value );
+
 
 		/* We're at the start of the linked list in this bin. */
 		if( next == hashtable->table[ bin ] ) {
@@ -129,6 +127,7 @@ int ht_set( hashtable_t *hashtable, char *key, char *value ) {
 			newpair->next = next;
 			last->next = newpair;
 		}
+	printf("shshcnc\n");
 	return 0;
 	}
 }
@@ -156,7 +155,7 @@ char *ht_get( hashtable_t *hashtable, char *key ) {
 
 }
 
-// 
+//
 // int main( int argc, char **argv ) {
 //
 // 	hashtable_t *hashtable = ht_create( 65536 );

@@ -1,0 +1,62 @@
+uno
+dos
+-1 uno
+-1 dos
+uno -1
+dos -1
+cuatro -1
+cinco -1
+funcion1
+uno
+-1 uno
+-1 funcion1
+-1 funcion1
+tres
+uno -1
+-10 1
+tres -1
+dos -1
+cuatro -1
+cierrefuncion1 -1
+funcion2
+uno
+dos
+tres
+uno -1
+dos -1
+-10 1
+tres -1
+cierrefuncion2 -1
+funcion3 -1
+funcion3
+uno
+dos
+tres
+cuatro
+uno -1
+dos -1
+funcion2 -1
+tres -1
+cuatro -1
+cierrefuncion1 -1
+funcion2 -1
+funcion4 -1
+funcion4
+uno
+dos
+tres
+uno -1
+dos -1
+tres -1
+funcion5 -1
+funcion3 -1
+cuatro -1
+cierreuno -1
+dos -1
+tres -1
+cuatro -1
+funcion1 -1
+funcion2 -1
+funcion3 -1
+funcion4 -1
+funcion5 -1
