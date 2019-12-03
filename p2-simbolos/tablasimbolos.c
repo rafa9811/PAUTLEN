@@ -24,16 +24,25 @@ int interactuarTabla(char *buffer){
     //En este caso, tenemos que interactuar con la tabla hash local.
     //Hemos de observar si token2 es NULL.
     if(token2 == NULL){
-      //Si es NULL, hemos de realizar búsqueda en la tabla global. Usaremos nuestra primitiva get.
+      //Si es NULL, hemos de realizar búsqueda en la tabla local. Usaremos nuestra primitiva get.
       //Hemos de pasar como clave a hashear lo primero que hemos leído de la línea.
       resultado = ht_get(hash_local, token1);
       if(resultado == NULL){
-        //Hemos de imprimir fallo de búsqueda.
-        fprintf(out, "%s -1\n", token1);
+        //Si no hemos encontrado nada en la tabla local, buscamos también en la global que es accesible desde
+        //un ámbito local.
+        resultado = ht_get(hash_global, token1);
+        if(resultado == NULL){
+          fprintf(out, "%s -1\n", token1);
+        }
+        else{
+          //Hemos encontrado con éxito en la global.
+          fprintf(out, "%s %s\n", token1, resultado);
+        }
+
       }
       else{
         //Imprimimos éxito en la búsqueda.
-        fprintf(out, "%s 1\n", resultado);
+        fprintf(out, "%s %s\n", token1, resultado);
       }
     }
     else{
@@ -69,15 +78,15 @@ int interactuarTabla(char *buffer){
 
       //Si es NULL, hemos de realizar búsqueda en la tabla global.
       resultado = ht_get(hash_global, token1);
-      fprintf(out, "%s -1\n", token1);
+
       if(resultado == NULL){
 
         //Hemos de imprimir fallo de búsqueda.
-
+          fprintf(out, "%s -1\n", token1);
       }
       else{
         //Imprimimos éxito en la búsqueda.
-        fprintf(out, "%s 1\n", resultado);
+        fprintf(out, "%s %s\n", token1, resultado);
       }
     }
 
@@ -101,11 +110,14 @@ int interactuarTabla(char *buffer){
       }
 
       else{
+        //Insertamos en el global antes de nada.
+        resultado_int = ht_set( hash_global, token1, token2 );
+        printf("resultado : %d\n", resultado_int);
         //En este caso, al ser el identificador negativo, hemos de pasar a ámbito local.
         //Cambiamos nuestra flag a local.
         flaglocal = 1;
         //Creamos la tabla local.
-        hash_local = ht_create(1000);
+        hash_local = ht_create(65536);
         //Insertamos en la tabla local. No hace falta comprobar la inserción puesto que la acabamos de crear.
         ht_set( hash_local, token1, token2 );
         fprintf(out, "%s\n", token1);
@@ -146,7 +158,7 @@ int main(int argc, char** argv) {
    }
 
    //Nada más empezar, nos creamos nuestro ámbito global.
-   hash_global = ht_create(1000);
+   hash_global = ht_create(65536);
 
    //Ahora leemos de fichero la primera línea.
 
