@@ -9,16 +9,13 @@ FILE *in, *out;
 
 //Función que interactua con las tablas hash dependiendo de lo que leemos.
 int interactuarTabla(char *buffer){
-  char **value;
-  char **value_res;
+  SIMBOLO *value;
+  SIMBOLO *value_res;
   char *token1, *token2;
-  int resultado_int, i;
+  int resultado_int;
 
-  value = calloc(PARAMS, sizeof(char*));
-  for(i=1; i<PARAMS; i++){
-  value[i] = calloc(64, sizeof(char));
-  value[i] = "\0";
-  }
+  value = calloc(1, sizeof(SIMBOLO));
+
   //Delimitamos por tabulador y por el \n del final.
   token1 = strtok(buffer, "\t\n");
 
@@ -44,14 +41,14 @@ int interactuarTabla(char *buffer){
         }
         else{
           //Hemos encontrado con éxito en la global.
-          fprintf(out, "%s %s\n", token1, value_res[0]);
+          fprintf(out, "%s %s\n", token1, value_res->identificador);
           fflush(out);
         }
 
       }
       else{
         //Imprimimos éxito en la búsqueda.
-        fprintf(out, "%s %s\n", token1, value_res[0]);
+        fprintf(out, "%s %s\n", token1, value_res->identificador);
         fflush(out);
       }
     }
@@ -68,7 +65,7 @@ int interactuarTabla(char *buffer){
       }
       else{
         //En este caso tan solo hemos de insertar en la tabla local.
-        value[0] = strdup(token2);
+        value->identificador = strdup(token2);
         resultado_int = ht_set( hash_local, token1, value );
         //Comprobamos si ha habido error en la inserción porque ya existía en la tabla.
         if(resultado_int == -1){
@@ -101,7 +98,7 @@ int interactuarTabla(char *buffer){
       }
       else{
         //Imprimimos éxito en la búsqueda.
-        fprintf(out, "%s %s\n", token1, value_res[0]);
+        fprintf(out, "%s %s\n", token1, value_res->identificador);
         fflush(out);
       }
     }
@@ -111,7 +108,7 @@ int interactuarTabla(char *buffer){
       //Si no es NULL, es decir, hemos recibido un número, identificador, es porque hemos de insertar en
       //la tabla global o crear un ámbito local. Comprobaremos esto mirando si es positivo o negativo.
       if(atoi(token2)>0){
-        value[0] = strdup(token2);
+        value->identificador = strdup(token2);
         resultado_int = ht_set( hash_global, token1, value );
         printf("resultado : %d\n", resultado_int);
         fflush(stdout);
@@ -131,7 +128,7 @@ int interactuarTabla(char *buffer){
 
       else{
         //Insertamos en el global antes de nada.
-        value[0] = strdup(token2);
+        value->identificador = strdup(token2);
         resultado_int = ht_set( hash_global, token1, value );
         printf("resultado : %d\n", resultado_int);
         fflush(out);
@@ -141,7 +138,7 @@ int interactuarTabla(char *buffer){
         //Creamos la tabla local.
         hash_local = ht_create(65536);
         //Insertamos en la tabla local. No hace falta comprobar la inserción puesto que la acabamos de crear.
-        value[0] = strdup(token2);
+        value->identificador = strdup(token2);
         ht_set( hash_local, token1, value );
         fprintf(out, "%s\n", token1);
         fflush(out);

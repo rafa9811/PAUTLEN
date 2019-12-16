@@ -13,9 +13,11 @@
 5: Si funcion-> nvariableslocales, si variable local->pos
 */
 
+
+
 struct entry_s {
 	char *key;
-	char **value;
+	SIMBOLO *value;
 	struct entry_s *next;
 };
 
@@ -72,9 +74,9 @@ int ht_hash( hashtable_t *hashtable, char *key ) {
 }
 
 /* Create a key-value pair. */
-entry_t *ht_newpair( char *key, char **value ) {
+entry_t *ht_newpair( char *key, SIMBOLO *value ) {
 	entry_t *newpair;
-  int i;
+  
 
 	if( ( newpair = malloc( sizeof( entry_t ) ) ) == NULL ) {
 		return NULL;
@@ -84,16 +86,15 @@ entry_t *ht_newpair( char *key, char **value ) {
 		return NULL;
 	}
 
-  newpair->value = calloc(PARAMS, sizeof(char*));
+  newpair->value = calloc(1, sizeof(SIMBOLO*));
+  newpair->value->identificador = calloc(64, sizeof(char));
+
   if(newpair->value == NULL){
     return NULL;
   }
 
-  for(i=0; i<PARAMS; i++){
-    if( ( newpair->value[i] = strdup(value[i]) ) == NULL ) {
-  		return NULL;
-  	}
-  }
+  memcpy(newpair->value, value, sizeof(*(newpair->value)));
+
 
 
 	newpair->next = NULL;
@@ -102,7 +103,7 @@ entry_t *ht_newpair( char *key, char **value ) {
 }
 
 /* Insert a key-value pair into a hash table. */
-int ht_set( hashtable_t *hashtable, char *key, char **value ) {
+int ht_set( hashtable_t *hashtable, char *key, SIMBOLO *value ) {
 
 	int bin = 0;
 	entry_t *newpair = NULL;
@@ -149,7 +150,7 @@ int ht_set( hashtable_t *hashtable, char *key, char **value ) {
 }
 
 /* Retrieve a key-value pair from a hash table. */
-char **ht_get( hashtable_t *hashtable, char *key ) {
+SIMBOLO *ht_get( hashtable_t *hashtable, char *key ) {
 	int bin = 0;
 	entry_t *pair;
 
