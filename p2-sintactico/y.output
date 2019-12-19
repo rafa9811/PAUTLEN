@@ -4,16 +4,6 @@ Terminales no usados en la gramática
    TOK_NOT
 
 
-Estado 75 conflictos: 2 desplazamiento/reducción
-Estado 76 conflictos: 6 desplazamiento/reducción
-Estado 100 conflictos: 2 desplazamiento/reducción
-Estado 101 conflictos: 2 desplazamiento/reducción
-Estado 102 conflictos: 2 desplazamiento/reducción
-Estado 103 conflictos: 2 desplazamiento/reducción
-Estado 121 conflictos: 6 desplazamiento/reducción
-Estado 122 conflictos: 6 desplazamiento/reducción
-
-
 Gramática
 
     0 $accept: programa $end
@@ -1097,8 +1087,6 @@ Estado 75
     TOK_AND        desplazar e ir al estado 81
     TOK_OR         desplazar e ir al estado 82
 
-    TOK_AND   [reduce usando la regla 46 (exp)]
-    TOK_OR    [reduce usando la regla 46 (exp)]
     $default  reduce usando la regla 46 (exp)
 
 
@@ -1112,20 +1100,10 @@ Estado 76
    48    | exp . TOK_OR TOK_OR exp
    49    | TOK_DISTINTO exp .
 
-    TOK_MAS        desplazar e ir al estado 77
-    TOK_MENOS      desplazar e ir al estado 78
-    TOK_DIVISION   desplazar e ir al estado 79
-    TOK_ASTERISCO  desplazar e ir al estado 80
-    TOK_AND        desplazar e ir al estado 81
-    TOK_OR         desplazar e ir al estado 82
+    TOK_AND  desplazar e ir al estado 81
+    TOK_OR   desplazar e ir al estado 82
 
-    TOK_MAS        [reduce usando la regla 49 (exp)]
-    TOK_MENOS      [reduce usando la regla 49 (exp)]
-    TOK_DIVISION   [reduce usando la regla 49 (exp)]
-    TOK_ASTERISCO  [reduce usando la regla 49 (exp)]
-    TOK_AND        [reduce usando la regla 49 (exp)]
-    TOK_OR         [reduce usando la regla 49 (exp)]
-    $default       reduce usando la regla 49 (exp)
+    $default  reduce usando la regla 49 (exp)
 
 
 Estado 77
@@ -1482,8 +1460,6 @@ Estado 100
     TOK_AND        desplazar e ir al estado 81
     TOK_OR         desplazar e ir al estado 82
 
-    TOK_AND   [reduce usando la regla 42 (exp)]
-    TOK_OR    [reduce usando la regla 42 (exp)]
     $default  reduce usando la regla 42 (exp)
 
 
@@ -1502,8 +1478,6 @@ Estado 101
     TOK_AND        desplazar e ir al estado 81
     TOK_OR         desplazar e ir al estado 82
 
-    TOK_AND   [reduce usando la regla 43 (exp)]
-    TOK_OR    [reduce usando la regla 43 (exp)]
     $default  reduce usando la regla 43 (exp)
 
 
@@ -1520,8 +1494,6 @@ Estado 102
     TOK_AND  desplazar e ir al estado 81
     TOK_OR   desplazar e ir al estado 82
 
-    TOK_AND   [reduce usando la regla 44 (exp)]
-    TOK_OR    [reduce usando la regla 44 (exp)]
     $default  reduce usando la regla 44 (exp)
 
 
@@ -1538,8 +1510,6 @@ Estado 103
     TOK_AND  desplazar e ir al estado 81
     TOK_OR   desplazar e ir al estado 82
 
-    TOK_AND   [reduce usando la regla 45 (exp)]
-    TOK_OR    [reduce usando la regla 45 (exp)]
     $default  reduce usando la regla 45 (exp)
 
 
@@ -1833,20 +1803,9 @@ Estado 121
    47    | exp TOK_AND TOK_AND exp .
    48    | exp . TOK_OR TOK_OR exp
 
-    TOK_MAS        desplazar e ir al estado 77
-    TOK_MENOS      desplazar e ir al estado 78
-    TOK_DIVISION   desplazar e ir al estado 79
-    TOK_ASTERISCO  desplazar e ir al estado 80
-    TOK_AND        desplazar e ir al estado 81
-    TOK_OR         desplazar e ir al estado 82
+    TOK_OR  desplazar e ir al estado 82
 
-    TOK_MAS        [reduce usando la regla 47 (exp)]
-    TOK_MENOS      [reduce usando la regla 47 (exp)]
-    TOK_DIVISION   [reduce usando la regla 47 (exp)]
-    TOK_ASTERISCO  [reduce usando la regla 47 (exp)]
-    TOK_AND        [reduce usando la regla 47 (exp)]
-    TOK_OR         [reduce usando la regla 47 (exp)]
-    $default       reduce usando la regla 47 (exp)
+    $default  reduce usando la regla 47 (exp)
 
 
 Estado 122
@@ -1859,20 +1818,7 @@ Estado 122
    48    | exp . TOK_OR TOK_OR exp
    48    | exp TOK_OR TOK_OR exp .
 
-    TOK_MAS        desplazar e ir al estado 77
-    TOK_MENOS      desplazar e ir al estado 78
-    TOK_DIVISION   desplazar e ir al estado 79
-    TOK_ASTERISCO  desplazar e ir al estado 80
-    TOK_AND        desplazar e ir al estado 81
-    TOK_OR         desplazar e ir al estado 82
-
-    TOK_MAS        [reduce usando la regla 48 (exp)]
-    TOK_MENOS      [reduce usando la regla 48 (exp)]
-    TOK_DIVISION   [reduce usando la regla 48 (exp)]
-    TOK_ASTERISCO  [reduce usando la regla 48 (exp)]
-    TOK_AND        [reduce usando la regla 48 (exp)]
-    TOK_OR         [reduce usando la regla 48 (exp)]
-    $default       reduce usando la regla 48 (exp)
+    $default  reduce usando la regla 48 (exp)
 
 
 Estado 123

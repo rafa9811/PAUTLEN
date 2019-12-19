@@ -60,6 +60,9 @@ extern int is_morpho;
 %left TOK_MAS TOK_MENOS
 %left TOK_ASTERISCO TOK_DIVISION
 %left TOK_NOT
+%left TOK_DISTINTO
+%left TOK_AND
+%left TOK_OR
 %%
 
 /* SECCION DE REGLAS */
