@@ -37,3 +37,10 @@ int ht_hash( hashtable_t *hashtable, char *key );
 entry_t *ht_newpair( char *key, SIMBOLO *value );
 int ht_set( hashtable_t *hashtable, char *key, SIMBOLO *value );
 SIMBOLO *ht_get( hashtable_t *hashtable, char *key );
+
+
+int cerrarAmbito();
+
+int insertarTabla(char *key, SIMBOLO *valor);
+
+SIMBOLO *buscarTabla(char *key);

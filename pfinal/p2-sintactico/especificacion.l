@@ -56,9 +56,9 @@ return {ncol+=yyleng; fprintf(out, ";D:\t%s\n", yytext); return TOK_RETURN;}
 "//".*\n {ncol=0; nlin++;}
 true {ncol+=yyleng; fprintf(out, ";D:\t%s\n", yytext); return TOK_TRUE;}
 false {ncol+=yyleng; fprintf(out, ";D:\t%s\n", yytext); return TOK_FALSE;}
-[A-Za-z][A-Za-z0-9]{0,99} {ncol+=yyleng; fprintf(out, ";D:\t%s\n", yytext); return TOK_IDENTIFICADOR;}
+[A-Za-z][A-Za-z0-9]{0,99} {ncol+=yyleng; fprintf(out, ";D:\t%s\n", yytext); strcpy(yylval.atributos.lexema, yytext); return TOK_IDENTIFICADOR;}
 [A-Za-z][A-Za-z0-9]{100,} {ncol+=yyleng; fprintf(out, ";D:\t%s\n", yytext); is_morpho =1; return TOK_ERROR;}
-[0-9]+ {ncol+=yyleng; fprintf(out, ";D:\t%s\n", yytext); return TOK_CONSTANTE_ENTERA;}
+[0-9]+ {ncol+=yyleng; fprintf(out, ";D:\t%s\n", yytext); yylval.atributos.valor_entero = atoi(yytext); return TOK_CONSTANTE_ENTERA;}
 
 . {ncol+=yyleng; is_morpho = 1; printf("****Error sintactico en [lin %d, col %d]\n", nlin, ncol); return TOK_ERROR;}
 

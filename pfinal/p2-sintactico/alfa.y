@@ -1,13 +1,29 @@
 /* SECCION DE DEFINICIONES */
 %{
 #include <stdio.h>
+#include "alfa.h"
+#include "generacion.h"
+#include "hash.h"
 int yylex();
 void yyerror(const char * s);
 extern FILE *out;
 extern int nlin;
 extern int ncol;
 extern int is_morpho;
+
+
 %}
+
+
+%union
+{
+ tipo_atributos atributos;
+}
+%token <atributos> TOK_IDENTIFICADOR
+%token <atributos> TOK_CONSTANTE_ENTERA
+
+%type <atributos> exp
+%type <atributos> comparacion
 
 /* Palabras reservadas */
 %token TOK_MAIN
@@ -47,11 +63,8 @@ extern int is_morpho;
 %token TOK_MENOR
 %token TOK_MAYOR
 
-/* Identificadores  */
-%token TOK_IDENTIFICADOR
 
 /* Constantes */
-%token TOK_CONSTANTE_ENTERA
 %token TOK_TRUE
 %token TOK_FALSE
 
@@ -137,7 +150,7 @@ resto_parametros_funcion: TOK_PUNTOYCOMA parametro_funcion resto_parametros_func
                         | {fprintf(out, ";R26:\t<resto_parametros_funcion> ::= \n");}
 	;
 
-parametro_funcion: tipo identificador {
+parametro_funcion: tipo idpf {
                     fprintf(out, ";R27:\t<parametro_funcion> ::= <tipo> <identificador>\n");
                     //INCREMENTAR CONTADORES, POR EJEMPLO
                     num_parametros++;
@@ -282,7 +295,10 @@ constante_logica: TOK_TRUE {fprintf(out, ";R102:\t<constante_logica> ::= true\n"
 constante_entera: TOK_CONSTANTE_ENTERA {fprintf(out, ";R104:\t<constante_entera> ::= TOK_CONSTANTE_ENTERA\n");}
 	;
 
-identificador: TOK_IDENTIFICADOR {
+identificador_ TOK_IDENTIFICADOR {fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");}
+  ;
+
+idpf: TOK_IDENTIFICADOR {
                 fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");
                 //COMPROBACIONES SEMANTICAS PARA $1.nombre
                 //EN ESTE CASO SE MUESTRA ERROR SI EL NOMBRE DEL PARAMETRO YA SE HA UTILIZADO
@@ -291,6 +307,7 @@ identificador: TOK_IDENTIFICADOR {
                 simbolo.tipo = tipo_actual;
                 simbolo.categoria = ESCALAR;
                 simbolo.posicion = posicion_paremetro;
+
                 //DECLARAR SIMBOLO EN LA TABLA
               }
 	;
