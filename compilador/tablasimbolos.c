@@ -1,26 +1,23 @@
 #include "tablasimbolos.h"
 
 //Variables globales que accederemos desde las distintas funciones.
-extern int flaglocal;
-extern hashtable_t *hash_local, *hash_global;
-FILE *in, *out;
 
 
-int cerrarAmbito() {
-  if( flaglocal == 0 ) return -1;
+int cerrarAmbito( tablas_simbolos *hashes) {
+  if( hashes->flaglocal == 0 ) return -1;
 
   else {
-    free( hash_local );
-    flaglocal = 0;
+    free( hashes->hash_local );
+    hashes->flaglocal = 0;
   }
 }
 
 
-int insertarTabla( char *key, SIMBOLO *valor ) {
+int insertarTabla( tablas_simbolos *hashes, char *key, SIMBOLO *valor ) {
   int value_res;
-  if( flaglocal == 1 ) {
+  if( hashes->flaglocal == 1 ) {
       // En este caso, tenemos que interactuar con la tabla hash local.
-      value_res = ht_set( hash_local, key, valor );
+      value_res = ht_set( hashes->hash_local, key, valor );
       // Si no hemos logrado insertar, devolvemos -1.
       if( value_res == -1 ) return -1;
       // Devolvemos éxito en la inserción.
@@ -28,17 +25,17 @@ int insertarTabla( char *key, SIMBOLO *valor ) {
   }
   else {
     // En este caso estamos en la tabla global.
-    value_res = ht_set( hash_global, key, valor );
+    value_res = ht_set( hashes->hash_global, key, valor );
 
     if( value_res == -1 ) return -1;
 
     if( valor->cat_simbolo == FUNCION ) {
       // Creamos la tabla local para abrir ámbito.
-      if( flaglocal != 0 ) return -1;
-      flaglocal = 1;
-      hash_local = ht_create( 65536 );
+      if( hashes->flaglocal != 0 ) return -1;
+      hashes->flaglocal = 1;
+      hashes->hash_local = ht_create( 65536 );
 
-      value_res = ht_set( hash_local, key, valor );
+      value_res = ht_set( hashes->hash_local, key, valor );
       // Si no hemos encontrado nada en la tabla local, buscamos también en la global que es accesible desde
       // un ámbito local.
       if( value_res == -1 ) return -1;
@@ -48,16 +45,16 @@ int insertarTabla( char *key, SIMBOLO *valor ) {
 }
 
 
-SIMBOLO* buscarTabla( char *key ) {
+SIMBOLO* buscarTabla(  tablas_simbolos *hashes, char *key ) {
   SIMBOLO *value_res;
 
-  if( flaglocal == 1 ) {
+  if( hashes->flaglocal == 1 ) {
     //En este caso, tenemos que interactuar con la tabla hash local.
-      value_res = ht_get( hash_local, key );
+      value_res = ht_get( hashes->hash_local, key );
       if( value_res == NULL ) {
         //Si no hemos encontrado nada en la tabla local, buscamos también en la global que es accesible desde
         //un ámbito local.
-        value_res = ht_get( hash_global, key );
+        value_res = ht_get( hashes->hash_global, key );
         if( value_res == NULL ) return NULL;
         //Hemos encontrado con éxito en la global.
         else return value_res;
@@ -67,7 +64,7 @@ SIMBOLO* buscarTabla( char *key ) {
   else {
     //En este caso estamos en la tabla global.
     //Si es NULL, hemos de realizar búsqueda en la tabla global.
-    value_res = ht_get( hash_global, key );
+    value_res = ht_get( hashes->hash_global, key );
 
     if( value_res == NULL ) return NULL;
     // Imprimimos éxito en la búsqueda.

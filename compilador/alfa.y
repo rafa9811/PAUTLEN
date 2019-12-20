@@ -9,13 +9,13 @@ extern FILE *out;
 extern int nlin;
 extern int ncol;
 extern int is_morpho;
-extern hashtable_t *hash_local;
-
+extern tablas_simbolos hashes;
 char buff[64];
-SIMBOLO aux;
+SIMBOLO *aux;
 
 int tipo_actual;
 int clase_actual;
+int etiqueta;
 %}
 
 %union
@@ -38,6 +38,7 @@ int clase_actual;
 %type <atributos> if_exp
 %type <atributos> while_exp
 %type <atributos> while
+%type <atributos> identificador
 
 
 /* Palabras reservadas */
@@ -231,22 +232,46 @@ bloque: condicional {fprintf(out, ";R40:\t<bloque> ::= <condicional>\n");}
       | bucle {fprintf(out, ";R41:\t<bloque> ::= <bucle>\n");}
 	;
 
-asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
+asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
+
+    fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");
+    aux = buscarTabla(&hashes, $1.lexema);
+      if (  aux == NULL){
+      printf("Error a la hora de asignación. No está en la tabla");
+      return -1;
+      }
+
+    if (aux->cat_simbolo == FUNCION){
+    printf("Error a la hora de asignación. Es una función");
+    return -1;
+    }
+
+
+    if (aux->categoria == VECTOR){
+      printf("Error a la hora de asignación. Es una vector");
+      return -1;
+    }
+
+    if (aux->tipo == $3.tipo){
+      printf("Error a la hora de asignación. No es el mismo tipo\n");
+      return -1;
+    }
+    }
           | elemento_vector TOK_ASIGNACION exp {
               fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");
               //COMPROBACIONES SEMANTICAS (VER SI $1.tipo == $3.tipo)
               //$1.valor ES EL INDICE DEL VECTOR EN EL QUE QUEREMOS ASIGNAR exp
               //escribir_operando(out, $1.valor, 0);
-              //escribir_elemento_vector(out, $1.lexema, simbolo->longitud, $3.es_variable);
-              //asignarDestinoEnPila(out, $3.es_variable);
+              //escribir_elemento_vector(out, $1.lexema, simbolo->longitud, $3.es_direccion);
+              //asignarDestinoEnPila(out, $3.es_direccion);
             }
   	;
 
 elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {
                    fprintf(out, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");
                    //COMPROBACIONES SEMANTICAS PARA EL SIMBOLO CON IDENTIFICADOR $1.lexema
-                   //NECESITAMOS EN $$: tipo, es_variable = 1, valor de $3 (ES EL INDICE DEL VECTOR)
-                   // escribir_elemento_vector(out, $1.lexema, simbolo->longitud, $3.es_variable);
+                   //NECESITAMOS EN $$: tipo, es_direccion = 1, valor de $3 (ES EL INDICE DEL VECTOR)
+                   // escribir_elemento_vector(out, $1.lexema, simbolo->longitud, $3.es_direccion);
                   }
 	;
 
@@ -263,7 +288,7 @@ condicional: if_exp_sentencias TOK_LLAVEDERECHA {
 
 if_exp: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA {
           //Comprb semanticas, y gestion de etiqueta.
-          //ifthen_inicio(out, $3.es_variable, $$.etiqueta);
+          //ifthen_inicio(out, $3.es_direccion, $$.etiqueta);
         }
   ;
 
@@ -289,20 +314,65 @@ while: TOK_WHILE TOK_PARENTESISIZQUIERDO {
 while_exp: while exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA {
             //COMPR SEMANTICAS (ver si tipo de ex es boolean)
             //$$.etiqueta = $1.etiqueta;
-            // while_exp_pila(out, $2.es_variable, $$.etiqueta);
+            // while_exp_pila(out, $2.es_direccion, $$.etiqueta);
             }
   ;
 
-lectura: TOK_SCANF identificador {fprintf(out, ";R54:\t<lectura> ::= scanf <identificador>\n");}
+lectura: TOK_SCANF identificador {fprintf(out, ";R54:\t<lectura> ::= scanf <identificador>\n");
+
+          aux = buscarTabla(&hashes, $2.lexema);
+          if(aux==NULL){
+            printf("Error semántico, no está en la tabla.\n");
+            return -1;
+          }
+          if(aux->cat_simbolo == FUNCION || aux->categoria != ESCALAR){
+            printf("Error semántico, no está en la tabla.\n");
+            return -1;
+          }
+          fprintf(out, ";leer\n");
+          leer(out, $2.lexema ,$2.tipo);
+
+
+
+          }
 	;
 
-escritura: TOK_PRINTF exp {fprintf(out, ";R56:\t<escritura> ::= printf <exp>\n");}
+escritura: TOK_PRINTF exp {fprintf(out, ";R56:\t<escritura> ::= printf <exp>\n");
+          if($2.es_direccion==1){
+            fprintf(out, ";escribir_operando\n");
+            escribir_operando(out, $2.lexema,1);
+            fprintf(out, ";escribir_operando\n");
+            escribir(out, $2.es_direccion, $2.tipo);
+          }
+
+    }
 	;
 
 retorno_funcion: TOK_RETURN exp {fprintf(out, ";R61:\t<retorno_funcion> ::= return <exp>\n");}
 	;
 
-exp: exp TOK_MAS exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
+exp: exp TOK_MAS exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");
+
+      if (($1.tipo == BOOLEANO) || ($3.tipo == BOOLEANO)){
+
+        printf("Error, la suma es entre dos booleanos.\n");
+        return -1;
+      }
+
+      if (($1.tipo == ENTERO) && ($3.tipo == ENTERO))
+        {
+        /* Invoca tu función de generación para sumar*/
+
+        escribir_operando(out,$1.lexema,$1.es_direccion);
+        escribir_operando(out,$3.lexema,$3.es_direccion);
+        sumar(out,$1.tipo,$3.tipo);
+
+        /* Propaga correctamente los atributos*/
+        $$.tipo = ENTERO;
+        $$.es_direccion = 0;
+        }
+
+  }
    | exp TOK_MENOS exp {fprintf(out, ";R73:\t<exp> ::= <exp> - <exp>\n");}
    | exp TOK_DIVISION exp {fprintf(out, ";R74:\t<exp> ::= <exp> / <exp>\n");}
    | exp TOK_ASTERISCO exp {fprintf(out, ";R75:\t<exp> ::= <exp> * <exp>\n");}
@@ -317,7 +387,11 @@ exp: exp TOK_MAS exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
        $$.es_direccion = $1.es_direccion;
      }
    | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO {fprintf(out, ";R82:\t<exp> ::= ( <exp> )\n");}
-   | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO {fprintf(out, ";R83:\t<exp> ::= ( <comparacion )\n");}
+   | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO {
+        fprintf(out, ";R83:\t<exp> ::= ( <comparacion )\n");
+        $$.tipo = $2.tipo;
+        $$.es_direccion = $2.es_direccion;
+   }
    | elemento_vector {fprintf(out, ";R84:\t<exp> ::= <elemento_vector>\n");}
    | identificador TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO {fprintf(out, ";R88:\t<exp> ::= <identificador> ( <lista_expresiones> )\n");}
 	;
@@ -330,12 +404,163 @@ resto_lista_expresiones: TOK_COMA exp resto_lista_expresiones {fprintf(out, ";R9
                        | {fprintf(out, ";R92:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");}
 	;
 
-comparacion: exp TOK_IGUAL exp {fprintf(out, ";R93:\t<comparacion> ::= <exp> == <exp>\n");}
-           | exp TOK_DISTINTO exp {fprintf(out, ";R94:\t<comparacion> ::= <exp> != <exp>\n");}
-           | exp TOK_MENORIGUAL exp {fprintf(out, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");}
-           | exp TOK_MAYORIGUAL exp {fprintf(out, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");}
-           | exp TOK_MENOR exp {fprintf(out, ";R97:\t<comparacion> ::= <exp> <= <exp>\n");}
-           | exp TOK_MAYOR exp {fprintf(out, ";R98:\t<comparacion> ::= <exp> >= <exp>\n");}
+comparacion: exp TOK_IGUAL exp {
+
+        fprintf(out, ";R93:\t<comparacion> ::= <exp> == <exp>\n");
+
+        if (($1.tipo == BOOLEANO) || ($3.tipo == BOOLEANO)){
+
+          printf("Error, la comparación es entre dos booleanos.\n");
+          return -1;
+        }
+
+        if (($1.tipo == ENTERO) && ($3.tipo == ENTERO))
+          {
+          /* Invoca tu función de generación para comparar*/
+
+          escribir_operando(out,$1.lexema,$1.es_direccion);
+          escribir_operando(out,$3.lexema,$3.es_direccion);
+          igual(out,$1.tipo, $3.tipo, etiqueta);
+
+          /* Propaga correctamente los atributos*/
+          etiqueta++;
+          $$.tipo = BOOLEANO;
+          $$.es_direccion = 0;
+          }
+  }
+           | exp TOK_DISTINTO exp {fprintf(out, ";R94:\t<comparacion> ::= <exp> != <exp>\n");
+
+           if (($1.tipo == BOOLEANO) || ($3.tipo == BOOLEANO)){
+
+             printf("Error, la comparación es entre dos booleanos.\n");
+             return -1;
+           }
+
+           if (($1.tipo == ENTERO) && ($3.tipo == ENTERO))
+             {
+             /* Invoca tu función de generación para comparar*/
+
+             escribir_operando(out,$1.lexema,$1.es_direccion);
+             escribir_operando(out,$3.lexema,$3.es_direccion);
+             distinto(out,$1.tipo, $3.tipo, etiqueta);
+
+             /* Propaga correctamente los atributos*/
+             etiqueta++;
+             $$.tipo = BOOLEANO;
+             $$.es_direccion = 0;
+             }
+
+
+
+           }
+           | exp TOK_MENORIGUAL exp {
+
+           fprintf(out, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");
+
+           if (($1.tipo == BOOLEANO) || ($3.tipo == BOOLEANO)){
+
+             printf("Error, la comparación es entre dos booleanos.\n");
+             return -1;
+           }
+
+           if (($1.tipo == ENTERO) && ($3.tipo == ENTERO))
+             {
+             /* Invoca tu función de generación para comparar*/
+
+             escribir_operando(out,$1.lexema,$1.es_direccion);
+             escribir_operando(out,$3.lexema,$3.es_direccion);
+             menor_igual(out,$1.tipo, $3.tipo, etiqueta);
+
+             /* Propaga correctamente los atributos*/
+             etiqueta++;
+             $$.tipo = BOOLEANO;
+             $$.es_direccion = 0;
+             }
+
+
+
+
+           }
+           | exp TOK_MAYORIGUAL exp {
+
+           fprintf(out, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");
+           if (($1.tipo == BOOLEANO) || ($3.tipo == BOOLEANO)){
+
+             printf("Error, la comparación es entre dos booleanos.\n");
+             return -1;
+           }
+
+           if (($1.tipo == ENTERO) && ($3.tipo == ENTERO))
+             {
+             /* Invoca tu función de generación para comparar*/
+
+             escribir_operando(out,$1.lexema,$1.es_direccion);
+             escribir_operando(out,$3.lexema,$3.es_direccion);
+             mayor_igual(out,$1.tipo, $3.tipo, etiqueta);
+
+             /* Propaga correctamente los atributos*/
+             etiqueta++;
+             $$.tipo = BOOLEANO;
+             $$.es_direccion = 0;
+             }
+
+
+
+           }
+           | exp TOK_MENOR exp {
+
+           fprintf(out, ";R97:\t<comparacion> ::= <exp> <= <exp>\n");
+           if (($1.tipo == BOOLEANO) || ($3.tipo == BOOLEANO)){
+
+             printf("Error, la comparación es entre dos booleanos.\n");
+             return -1;
+           }
+
+           if (($1.tipo == ENTERO) && ($3.tipo == ENTERO))
+             {
+             /* Invoca tu función de generación para comparar*/
+
+             escribir_operando(out,$1.lexema,$1.es_direccion);
+             escribir_operando(out,$3.lexema,$3.es_direccion);
+             menor(out,$1.tipo, $3.tipo, etiqueta);
+
+             /* Propaga correctamente los atributos*/
+             etiqueta++;
+             $$.tipo = BOOLEANO;
+             $$.es_direccion = 0;
+             }
+
+
+
+
+           }
+           | exp TOK_MAYOR exp {
+
+           fprintf(out, ";R98:\t<comparacion> ::= <exp> >= <exp>\n");
+           if (($1.tipo == BOOLEANO) || ($3.tipo == BOOLEANO)){
+
+             printf("Error, la comparación es entre dos booleanos.\n");
+             return -1;
+           }
+
+           if (($1.tipo == ENTERO) && ($3.tipo == ENTERO))
+             {
+             /* Invoca tu función de generación para comparar*/
+
+             escribir_operando(out,$1.lexema,$1.es_direccion);
+             escribir_operando(out,$3.lexema,$3.es_direccion);
+             mayor(out,$1.tipo, $3.tipo, etiqueta);
+
+             /* Propaga correctamente los atributos*/
+             etiqueta++;
+             $$.tipo = BOOLEANO;
+             $$.es_direccion = 0;
+             }
+
+
+
+
+           }
 	;
 
 constante: constante_logica {fprintf(out, ";R99:\t<constante> ::= <constante_logica>\n");}
@@ -375,19 +600,12 @@ constante_entera: TOK_CONSTANTE_ENTERA {
 
 identificador: TOK_IDENTIFICADOR {
                  fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");
-                 if( buscarTabla( $1.lexema ) != NULL ) {
+                 if( buscarTabla( &hashes, $1.lexema ) != NULL ) {
                     printf( "Error semántico en línea %d y columna %d", nlin, ncol );
                  } else {
-                    aux.identificador = $1.lexema;
-                    aux.valor = -1;
-                    aux.cat_simbolo = VARIABLE;
-                    aux.tipo = tipo_actual;
-                    aux.categoria = clase_actual;
-                    aux.longitud = -1;
-                    aux.num_parametros = -1;
-                    aux.posicion = -1;
-                    aux.num_var_locales = -1;
-                    insertarTabla( $1.lexema, &aux );
+
+                    aux = new_simbolo($1.lexema, VARIABLE, tipo_actual, clase_actual, -1, -1, -1, -1, -1);
+                    insertarTabla( &hashes, $1.lexema, aux );
                     declarar_variable( out, $1.lexema, tipo_actual, 1 );
                  }
                }

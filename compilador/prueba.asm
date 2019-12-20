@@ -15,9 +15,9 @@ __esp resd 1
 ;R108:	<identificador> ::= TOK_IDENTIFICADOR
 _x resd 1
 ;D:	,
-;D:	y
+;D:	x
 ;R108:	<identificador> ::= TOK_IDENTIFICADOR
-_y resd 1
+_x resd 1
 ;D:	;
 ;R18:	<identificadores> ::= <identificador>
 ;R19:	<identificadores> ::= <identificador> , <identificadores>
@@ -27,6 +27,7 @@ _y resd 1
 ;escribir_segmento_codigo
 segment .text
 global main
+extern malloc, free
 extern scan_int, scan_boolean, print_int, print_boolean, print_blank, print_endofline, print_string
 ;R21:	<funciones> ::= 
 ;escribir_inicio_main

@@ -5,10 +5,9 @@
  */
  #include "hash.h"
 
-
 struct entry_s {
 	char *key;
-	SIMBOLO *value;
+	SIMBOLO value;
 	struct entry_s *next;
 };
 
@@ -18,6 +17,20 @@ struct hashtable_s {
 	struct entry_s **table;
 };
 
+SIMBOLO *new_simbolo(char *identificador, int cat_simbolo, int tipo, int categoria, int valor, int longitud, int num_parametros, int posicion, int num_var_locales) {
+  SIMBOLO *new;
+  new = calloc(1, sizeof(SIMBOLO));
+  strcpy(new->identificador, identificador);
+  new->cat_simbolo = cat_simbolo;
+  new->tipo = tipo;
+  new->categoria = categoria;
+  new->valor = valor;
+  new->longitud = longitud;
+  new->num_parametros = num_parametros;
+  new->posicion = posicion;
+  new->num_var_locales = num_var_locales;
+  return new;
+}
 
 /* Create a new hashtable. */
 hashtable_t *ht_create( int size ) {
@@ -65,7 +78,6 @@ int ht_hash( hashtable_t *hashtable, char *key ) {
 entry_t *ht_newpair( char *key, SIMBOLO *value ) {
 	entry_t *newpair;
 
-
 	if( ( newpair = malloc( sizeof( entry_t ) ) ) == NULL ) {
 		return NULL;
 	}
@@ -74,14 +86,15 @@ entry_t *ht_newpair( char *key, SIMBOLO *value ) {
 		return NULL;
 	}
 
-  newpair->value = calloc(1, sizeof(SIMBOLO*));
-  newpair->value->identificador = calloc(64, sizeof(char));
-
-  if(newpair->value == NULL){
-    return NULL;
-  }
-
-  memcpy(newpair->value, value, sizeof(*(newpair->value)));
+	strcpy( newpair->value.identificador, value->identificador);
+  newpair->value.cat_simbolo = value->cat_simbolo;
+  newpair->value.tipo = value->tipo;
+  newpair->value.categoria = value->categoria;
+  newpair->value.valor = value->valor;
+  newpair->value.longitud = value->longitud;
+  newpair->value.num_parametros = value->num_parametros;
+  newpair->value.posicion = value->posicion;
+  newpair->value.num_var_locales = value->num_var_locales;
 
 	newpair->next = NULL;
 
@@ -105,17 +118,11 @@ int ht_set( hashtable_t *hashtable, char *key, SIMBOLO *value ) {
 		next = next->next;
 	}
 
-	/* There's already a pair.  Let's replace that string. */
+	/* There's already a pair.  Error. */
 	if( next != NULL && next->key != NULL && strcmp( key, next->key ) == 0 ) {
-
-		free( next->value );
-    next->value = calloc(1, sizeof(SIMBOLO*));
-    next->value->identificador = calloc(64, sizeof(char));
-    memcpy(next->value, value, sizeof(*(next->value)));
-
-    return 0;
-
-
+    printf("Encontrado duplicado en el set.\n");
+    fflush(stdout);
+		return -1;
 
 	/* Nope, could't find it.  Time to grow a pair. */
 	} else {
@@ -137,7 +144,7 @@ int ht_set( hashtable_t *hashtable, char *key, SIMBOLO *value ) {
 			newpair->next = next;
 			last->next = newpair;
 		}
-
+	printf("Insertado por primera vez el set.\n");
 	return 0;
 	}
 }
@@ -157,10 +164,11 @@ SIMBOLO *ht_get( hashtable_t *hashtable, char *key ) {
 
 	/* Did we actually find anything? */
 	if( pair == NULL || pair->key == NULL || strcmp( key, pair->key ) != 0 ) {
+      printf("No encontrado en get\n");
 		return NULL;
 
 	} else {
-		return pair->value;
+		return &pair->value;
 	}
 
 }

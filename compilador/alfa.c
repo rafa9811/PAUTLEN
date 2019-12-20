@@ -3,9 +3,7 @@
 #include "alfa.h"
 
 /* Tabla de símbolos global */
-hashtable_t *hash_global;
-hashtable_t *hash_local;
-int flaglocal;
+tablas_simbolos hashes;
 FILE *out;
 
 
@@ -39,8 +37,8 @@ int main(int argc, char **argv) {
 
   yyin = in;
 
-  hash_global = ht_create( 65536 );
-  flaglocal = 0;
+  hashes.hash_global = ht_create( 65536 );
+  hashes.flaglocal = 0;
 
   yyparse();
 

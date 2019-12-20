@@ -21,20 +21,20 @@
 #define ESCALAR 0
 #define VECTOR 1
 
-/* Información de un símbolo */
-typedef struct simbolo_s {
-    char *identificador;                /* identificador */
-    int cat_simbolo;      /* categoría del simbolo */
-    int tipo;                          /* tipo */
-    int categoria;                /* categoria de la variable */
+typedef struct _simbolo {
+    char identificador[64];             /* identificador */
+    int cat_simbolo;                    /* categoría del simbolo */
+    int tipo;                           /* tipo */
+    int categoria;                      /* categoria de la variable */
     int valor;                          /* valor si escalar */
     int longitud;                       /* longitud si vector */
     int num_parametros;                 /* número de parámetros si función */
     int posicion;                       /* posición en llamada a función si parámetro, posición de declaración si variable local de función */
     int num_var_locales;                /* número de variables locales si función */
-} SIMBOLO;
+}SIMBOLO;
 
 typedef struct entry_s entry_t;
+
 typedef struct hashtable_s hashtable_t;
 
 hashtable_t *ht_create( int size );
@@ -42,3 +42,4 @@ int ht_hash( hashtable_t *hashtable, char *key );
 entry_t *ht_newpair( char *key, SIMBOLO *value );
 int ht_set( hashtable_t *hashtable, char *key, SIMBOLO *value );
 SIMBOLO *ht_get( hashtable_t *hashtable, char *key );
+SIMBOLO *new_simbolo(char *identificador, int cat_simbolo, int tipo, int categoria, int valor, int longitud, int num_parametros, int posicion, int num_var_locales);
