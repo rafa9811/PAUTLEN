@@ -5,15 +5,6 @@
  */
  #include "hash.h"
 
-/*0: ID
-1: 1-VARIABLE, 2-PARAMETRO, 3-FUNCION
-2: 1- BOOLEAN, 2-INT
-3: 1- ESCALAR, 2-VECTOR.
-4: Si vectores->tamaño, Si funcion-> nparams, si parametro->pos.
-5: Si funcion-> nvariableslocales, si variable local->pos
-*/
-
-
 
 struct entry_s {
 	char *key;
@@ -22,13 +13,10 @@ struct entry_s {
 };
 
 
-
 struct hashtable_s {
 	int size;
 	struct entry_s **table;
 };
-
-
 
 
 /* Create a new hashtable. */
@@ -76,7 +64,7 @@ int ht_hash( hashtable_t *hashtable, char *key ) {
 /* Create a key-value pair. */
 entry_t *ht_newpair( char *key, SIMBOLO *value ) {
 	entry_t *newpair;
-  
+
 
 	if( ( newpair = malloc( sizeof( entry_t ) ) ) == NULL ) {
 		return NULL;
@@ -94,8 +82,6 @@ entry_t *ht_newpair( char *key, SIMBOLO *value ) {
   }
 
   memcpy(newpair->value, value, sizeof(*(newpair->value)));
-
-
 
 	newpair->next = NULL;
 
@@ -122,7 +108,14 @@ int ht_set( hashtable_t *hashtable, char *key, SIMBOLO *value ) {
 	/* There's already a pair.  Let's replace that string. */
 	if( next != NULL && next->key != NULL && strcmp( key, next->key ) == 0 ) {
 
-		return -1;
+		free( next->value );
+    next->value = calloc(1, sizeof(SIMBOLO*));
+    next->value->identificador = calloc(64, sizeof(char));
+    memcpy(next->value, value, sizeof(*(next->value)));
+
+    return 0;
+
+
 
 	/* Nope, could't find it.  Time to grow a pair. */
 	} else {
@@ -144,7 +137,7 @@ int ht_set( hashtable_t *hashtable, char *key, SIMBOLO *value ) {
 			newpair->next = next;
 			last->next = newpair;
 		}
-	printf("shshcnc\n");
+
 	return 0;
 	}
 }

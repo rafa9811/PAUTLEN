@@ -1,7 +1,9 @@
  /*Sección de definiciones*/
 
 %{
+#include "alfa.h"
 #include "y.tab.h"
+
 int ncol = 0;
 int nlin = 0;
 int is_morpho = 0;

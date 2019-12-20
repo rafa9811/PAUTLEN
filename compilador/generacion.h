@@ -11,6 +11,7 @@
 #define GENERACION_H
 
 #include <stdio.h>
+#include <stdlib.h>
 
 /* Declaraciones de tipos de datos del compilador */
 #define ENTERO 1

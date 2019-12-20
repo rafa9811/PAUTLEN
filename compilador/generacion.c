@@ -7,8 +7,6 @@
 ** ÚLTIMA MODIFICACIÓN: 28 de octubre de 2019.
 **********************************************************************/
 
-#include <stdlib.h>
-#include <stdio.h>
 #include "generacion.h"
 
 /******************
@@ -60,6 +58,7 @@ void escribir_segmento_codigo(FILE* fpasm) {
   }
   fprintf(fpasm, "segment .text\n");
   fprintf(fpasm, "global main\n");
+  fprintf(fpasm, "extern malloc, free\n");
   fprintf(fpasm, "extern scan_int, scan_boolean, print_int, print_boolean, print_blank, print_endofline, print_string\n");
 }
 
