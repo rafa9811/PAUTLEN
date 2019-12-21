@@ -15,7 +15,7 @@ SIMBOLO *aux;
 
 int tipo_actual;
 int clase_actual;
-int etiqueta;
+int etiqueta = 0;
 %}
 
 %union
@@ -283,7 +283,8 @@ condicional: if_exp_sentencias TOK_LLAVEDERECHA {
 
            | if_exp_sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
                fprintf(out, ";R51:\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");
-               ifthenelse_fin(out, "$1.etiqueta");
+               fprintf(out,";ifthenelse_fin\n");
+               ifthenelse_fin(out, $1.etiqueta);
               }
 	;
 
@@ -294,33 +295,42 @@ if_exp: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIE
             return -1;
           }
           $$.etiqueta = etiqueta++;
+          fprintf(out,";ifthen_inicio\n");
           ifthen_inicio(out, $3.es_direccion, $$.etiqueta);
         }
   ;
 
 if_exp_sentencias: if_exp sentencias {
                      $$.etiqueta = $1.etiqueta;
+                     fprintf(out,";ifthenelse_fin_then\n");
                      ifthenelse_fin_then(out, $$.etiqueta);
                    }
   ;
 
 bucle: while_exp sentencias TOK_LLAVEDERECHA {
         fprintf(out, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");
-        // while_fin(out, $1.etiqueta);
+        fprintf(out,";while_fin\n");
+        while_fin(out, $1.etiqueta);
         }
 	;
 
 while: TOK_WHILE TOK_PARENTESISIZQUIERDO {
         //GESTION ETIQUETA
-        // while_inicio(out, $$.etiqueta);
+        $$.etiqueta = etiqueta++;
+        fprintf(out,";while_inicio\n");
+        while_inicio(out, $$.etiqueta);
         }
 
   ;
 
 while_exp: while exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA {
-            //COMPR SEMANTICAS (ver si tipo de ex es boolean)
-            //$$.etiqueta = $1.etiqueta;
-            // while_exp_pila(out, $2.es_direccion, $$.etiqueta);
+            if($2.tipo != BOOLEANO){
+               printf("Error semántico. La exp de la condición del if no es BOOLEANO. \n");
+               return -1;
+            }
+            $$.etiqueta = $1.etiqueta;
+            fprintf(out,";while_exp_pila\n");
+            while_exp_pila(out, $2.es_direccion, $$.etiqueta);
             }
   ;
 
@@ -344,10 +354,10 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR {fprintf(out, ";R54:\t<lectura> ::= scanf <
 	;
 
 escritura: TOK_PRINTF exp {fprintf(out, ";R56:\t<escritura> ::= printf <exp>\n");
-          if($2.es_direccion==1){
+
             fprintf(out, ";escribir\n");
             escribir(out, $2.es_direccion, $2.tipo);
-          }
+
 
     }
 	;
