@@ -1,4 +1,12 @@
 main
 {
-  int x, x;
+  int x, y, z;
+  scanf x;
+  scanf y;
+  scanf z;
+
+  if ((x==0)&&(y==0)&&(z==0))
+  {
+   printf 0;
+  }
 }
