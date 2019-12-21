@@ -278,6 +278,7 @@ elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO
 
 condicional: if_exp_sentencias TOK_LLAVEDERECHA {
                fprintf(out, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");
+               fprintf(out,";ifthenelse_fin\n");
                ifthenelse_fin(out, $1.etiqueta);
               }
 

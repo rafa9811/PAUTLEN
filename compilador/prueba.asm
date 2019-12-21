@@ -34,7 +34,7 @@ segment .text
 global main
 extern malloc, free
 extern scan_int, scan_boolean, print_int, print_boolean, print_blank, print_endofline, print_string
-;R21:	<funciones> ::= 
+;R21:	<funciones> ::=
 ;escribir_inicio_main
 main:
 mov dword [__esp], esp
@@ -122,7 +122,7 @@ fin_igual_1:
 ;R83:	<exp> ::= ( <comparacion )
 ;D:	&&
 ;R77:	<exp> ::= <exp> && <exp>
-;y 
+;y
 pop dword edx
 pop dword eax
 and eax, edx
@@ -154,7 +154,7 @@ fin_igual_2:
 ;R83:	<exp> ::= ( <comparacion )
 ;D:	)
 ;R77:	<exp> ::= <exp> && <exp>
-;y 
+;y
 pop dword edx
 pop dword eax
 and eax, edx
@@ -242,7 +242,7 @@ fin_mayor_5:
 ;R83:	<exp> ::= ( <comparacion )
 ;D:	)
 ;R77:	<exp> ::= <exp> && <exp>
-;y 
+;y
 pop dword edx
 pop dword eax
 and eax, edx
@@ -395,7 +395,7 @@ fin_mayor_10:
 ;R83:	<exp> ::= ( <comparacion )
 ;D:	)
 ;R77:	<exp> ::= <exp> && <exp>
-;y 
+;y
 pop dword edx
 pop dword eax
 and eax, edx
@@ -548,7 +548,7 @@ fin_menor_15:
 ;R83:	<exp> ::= ( <comparacion )
 ;D:	)
 ;R77:	<exp> ::= <exp> && <exp>
-;y 
+;y
 pop dword edx
 pop dword eax
 and eax, edx
@@ -701,7 +701,7 @@ fin_menor_20:
 ;R83:	<exp> ::= ( <comparacion )
 ;D:	)
 ;R77:	<exp> ::= <exp> && <exp>
-;y 
+;y
 pop dword edx
 pop dword eax
 and eax, edx
