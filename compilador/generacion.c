@@ -103,10 +103,12 @@ void asignar(FILE* fpasm, char* nombre, int es_variable) {
 	  return;
   }
   if(es_variable == 1) {
-    fprintf(fpasm, "pop dword _%s\n", nombre);
+	fprintf(fpasm, "pop dword eax\n");
+    fprintf(fpasm, "mov dword _%s, eax\n", nombre);
   }
   else {
-    fprintf(fpasm, "pop dword [_%s]\n", nombre);
+	fprintf(fpasm, "pop dword eax\n");
+    fprintf(fpasm, "mov dword [_%s], eax\n", nombre);
   }
 }
 

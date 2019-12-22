@@ -61,7 +61,7 @@ hashtable_t *ht_create( int size ) {
 /* Hash a string for a particular hash table. */
 int ht_hash( hashtable_t *hashtable, char *key ) {
 
-	unsigned long int hashval = 0;
+	unsigned long int hashval=0;
 	int i = 0;
 
 	/* Convert our string to an integer */
@@ -87,14 +87,14 @@ entry_t *ht_newpair( char *key, SIMBOLO *value ) {
 	}
 
 	strcpy( newpair->value.identificador, value->identificador);
-  newpair->value.cat_simbolo = value->cat_simbolo;
-  newpair->value.tipo = value->tipo;
-  newpair->value.categoria = value->categoria;
-  newpair->value.valor = value->valor;
-  newpair->value.longitud = value->longitud;
-  newpair->value.num_parametros = value->num_parametros;
-  newpair->value.posicion = value->posicion;
-  newpair->value.num_var_locales = value->num_var_locales;
+   newpair->value.cat_simbolo = value->cat_simbolo;
+   newpair->value.tipo = value->tipo;
+   newpair->value.categoria = value->categoria;
+   newpair->value.valor = value->valor;
+   newpair->value.longitud = value->longitud;
+   newpair->value.num_parametros = value->num_parametros;
+   newpair->value.posicion = value->posicion;
+   newpair->value.num_var_locales = value->num_var_locales;
 
 	newpair->next = NULL;
 
@@ -120,9 +120,20 @@ int ht_set( hashtable_t *hashtable, char *key, SIMBOLO *value ) {
 
 	/* There's already a pair.  Error. */
 	if( next != NULL && next->key != NULL && strcmp( key, next->key ) == 0 ) {
-    printf("Encontrado duplicado en el set.\n");
-    fflush(stdout);
-		return -1;
+
+      strcpy( next->value.identificador, value->identificador);
+      next->value.cat_simbolo = value->cat_simbolo;
+      next->value.tipo = value->tipo;
+      next->value.categoria = value->categoria;
+      next->value.valor = value->valor;
+      next->value.longitud = value->longitud;
+      next->value.num_parametros = value->num_parametros;
+      next->value.posicion = value->posicion;
+      next->value.num_var_locales = value->num_var_locales;
+
+      printf("repetido...reemplazando\n");
+      fflush(stdout);
+		return 0;
 
 	/* Nope, could't find it.  Time to grow a pair. */
 	} else {
@@ -144,7 +155,7 @@ int ht_set( hashtable_t *hashtable, char *key, SIMBOLO *value ) {
 			newpair->next = next;
 			last->next = newpair;
 		}
-	printf("Insertado por primera vez el set.\n");
+	printf("shshcnc\n");
 	return 0;
 	}
 }
@@ -164,7 +175,6 @@ SIMBOLO *ht_get( hashtable_t *hashtable, char *key ) {
 
 	/* Did we actually find anything? */
 	if( pair == NULL || pair->key == NULL || strcmp( key, pair->key ) != 0 ) {
-      printf("No encontrado en get\n");
 		return NULL;
 
 	} else {
