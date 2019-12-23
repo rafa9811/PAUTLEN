@@ -9,6 +9,7 @@ int cerrarAmbito( tablas_simbolos *hashes) {
   else {
     free( hashes->hash_local );
     hashes->flaglocal = 0;
+	return 0;
   }
 }
 

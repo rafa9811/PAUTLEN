@@ -6,15 +6,13 @@
 tablas_simbolos hashes;
 FILE *out;
 
-
+int yyparse();
 int main(int argc, char **argv) {
 
-  extern int nlin, ncol, yyleng;
   extern FILE* yyin;
-  extern char* yytext;
   char* entrada, *salida;
   FILE *in;
-  int leido;
+
 
   if (argc != 3){
     fprintf(stderr, "Error en el número de parámetros de entrada");
