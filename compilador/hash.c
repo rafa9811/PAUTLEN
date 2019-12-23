@@ -131,8 +131,8 @@ int ht_set( hashtable_t *hashtable, char *key, SIMBOLO *value ) {
       next->value.posicion = value->posicion;
       next->value.num_var_locales = value->num_var_locales;
 
-      printf("repetido...reemplazando\n");
-      fflush(stdout);
+
+
 		return 0;
 
 	/* Nope, could't find it.  Time to grow a pair. */
@@ -155,7 +155,7 @@ int ht_set( hashtable_t *hashtable, char *key, SIMBOLO *value ) {
 			newpair->next = next;
 			last->next = newpair;
 		}
-	printf("shshcnc\n");
+	
 	return 0;
 	}
 }

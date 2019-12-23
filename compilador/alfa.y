@@ -221,18 +221,17 @@ funcion: fn_declaration sentencias TOK_LLAVEDERECHA {
 		  printf("Error. La funcion no se ha le ha podido cerrar el ámbito.\n");
 		  return -1;
 		  }
-		  printf("%s Ya hecho cierre con flaglocal %d\n", $1.lexema, hashes.flaglocal);
+
 
 		  aux = buscarTabla(&hashes, $1.lexema);
 		  if(aux==NULL){
 			printf("Error. La funcion ya estaba declarada pero no la encontramos.\n");
 			return -1;
 		  }
-		  printf("%d\n", num_parametros_actual);
-		  printf("%d\n", aux->num_parametros);
+
 
 		  aux = new_simbolo($1.lexema, FUNCION, aux->tipo, -1, -1, -1, num_parametros_actual, -1, num_var_locales_actual);
-		  printf("Insertando con flag_local %d y con esta clave %s\n", hashes.flaglocal, $1.lexema);
+
 		  insertarTabla(&hashes, $1.lexema, aux);
 		  //Volvemos a cerrarAmbito porque por defecto se abre para una función pero no lo queremos.
 		  if(cerrarAmbito(&hashes)==-1){
@@ -264,11 +263,10 @@ fn_declaration: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESI
 				   printf("Error. La función ya estaba declarada pero no la encontramos.\n");
 				   return -1;
 				 }
-				 printf("%d\n", num_parametros_actual);
-				 printf("%d\n", aux->num_parametros);
+
 
 				 aux = new_simbolo($1.lexema, FUNCION, aux->tipo, -1, -1, -1, num_parametros_actual, -1, num_var_locales_actual);
-				 printf("Insertando con flag_local %d y con esta clave %s\n", hashes.flaglocal, $1.lexema);
+
 				 insertarTabla(&hashes, $1.lexema, aux);
 
 
@@ -288,7 +286,7 @@ fn_name: TOK_FUNCTION tipo TOK_IDENTIFICADOR {
 		  }
 
 		  aux = new_simbolo($3.lexema, FUNCION, tipo_actual, -1, -1, -1, -1, -1, -1);
-		  printf("Insertando %s con esta flag %d", $3.lexema, hashes.flaglocal);
+
 		  insertarTabla(&hashes, $3.lexema, aux);
 		  num_parametros_actual = 0;
 		  num_var_locales_actual = 1;
@@ -345,10 +343,10 @@ bloque: condicional {fprintf(out, ";R40:\t<bloque> ::= <condicional>\n");}
 asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
 
     fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");
-	printf("flaglocal antes de buscar:%d y con esta clave %s\n", hashes.flaglocal, $1.lexema);
+	
     aux = buscarTabla(&hashes, $1.lexema);
   if (  aux == NULL){
-      printf("Error a la hora de asignacion. No esta en la tabla 1\n");
+      printf("****Error semántico en lin %d a la hora de asignacion.\n",nlin);
       return -1;
   }
 
@@ -364,7 +362,7 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
     }
 
     if (aux->tipo != $3.tipo){
-	  printf("%d %d\n", aux->tipo, $3.tipo);
+
       printf("****Error semantico en lin %d a la hora de asignacion. No es el mismo tipo\n", nlin);
       return -1;
     }
@@ -377,7 +375,7 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
 		}
 		else{
 			fprintf(out, ";escribirVariableLocal\n");
-			printf("POSICION: %d\n", aux->posicion);
+
 			escribirVariableLocal(out, aux->posicion);
 
 		}
@@ -403,7 +401,7 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
 
 			  aux = buscarTabla(&hashes, $1.lexema);
 			  if (  aux == NULL){
-				  printf("Error a la hora de asignacion. No esta en la tabla");
+				  printf("****Error semantico en lin %d a la hora de asignacion. No esta en la tabla", nlin);
 				  return -1;
 			  }
 			  if (aux->cat_simbolo == FUNCION){
@@ -882,7 +880,7 @@ exp: exp TOK_MAS exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");
 		return -1;
 		}
 		if(num_parametros_llamada != aux->num_parametros){
-		printf("llamada %d  declaracion %d en clave %s\n", num_parametros_llamada, aux->num_parametros, aux->identificador);
+
 			printf("****Error semantico en lin %d. La llamada a funcion no tiene el numero necesario de argumentos.\n", nlin);
 			return -1;
 		}
@@ -891,6 +889,7 @@ exp: exp TOK_MAS exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");
 		llamarFuncion(out, $1.lexema, num_parametros_llamada);
 		fprintf(out, ";limpiarPila\n");
 		limpiarPila(out, num_parametros_llamada);
+		//Reseteamos las variables globales necesarias para poder realizar otra llamada después a otra función.
 		num_parametros_llamada = 0;
 		$$.es_direccion = 0;
 		flag_llamada_funcion = 0;
@@ -901,6 +900,8 @@ exp: exp TOK_MAS exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");
    }
 	;
 
+//Esta regla vacía la creamos porque aquí estamos seguros de que estamos realizando una llamada a función
+//y por tanto activamos esta flag global para que a la hora de pasar los parámetros llamemos a operandoEnPilaAArgumento.
 flag_llamada_regla: {
 	if(flag_llamada_funcion==1){
 		printf("****Error semantico en lin %d. No esta permitido el uso de llamadas a funciones como parametros de otras funciones.\n",nlin);
@@ -912,6 +913,7 @@ flag_llamada_regla: {
 
 lista_expresiones: exp resto_lista_expresiones {
 		fprintf(out, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");
+		//Vamos incrementando los parámetros que estamos contando en la llamada.
 		num_parametros_llamada ++;
 
 
@@ -1116,9 +1118,10 @@ identificador: TOK_IDENTIFICADOR {
                     printf( "****Error semantico en linea %d. Declaracion duplicada.", nlin);
                     return -1;
                  } else {
-
+				 	//Aquí lo que hacemos es comprobar que si estamos en la definición de una función,
+					//las variables son locales de la funcion y por tanto no hay que declararlas.
 					if(flag_definicion_funcion==1){
-						printf("clase actual %d y con lexema %s\n", clase_actual, $1.lexema);
+
 						 if (clase_actual != ESCALAR){
 						 	printf("****Error semantico en lin %d. Variable local de tipo no escalar.\n",nlin);
 							return -1;
@@ -1128,8 +1131,9 @@ identificador: TOK_IDENTIFICADOR {
 						 num_var_locales_actual++;
 					 }
 					 else{
+					 	//Si no, son variables normales y por tanto podemos llamar a declarar_variable.
 						 aux = new_simbolo($1.lexema, VARIABLE, tipo_actual, clase_actual, -1, longitud_actual, -1, -1, -1);
-						 printf("flaglocal antes de insertar:%d y este key %s\n",hashes.flaglocal, $1.lexema);
+
 						 insertarTabla( &hashes, $1.lexema, aux );
 						 fprintf(out, ";declarar_variable\n");
 						 declarar_variable( out, $1.lexema, tipo_actual, longitud_actual);
@@ -1150,7 +1154,7 @@ idpf: TOK_IDENTIFICADOR {
 					return -1;
 				}
 				aux = new_simbolo($1.lexema, PARAMETRO, tipo_actual, ESCALAR, -1, 1, -1, posicion_parametro, -1);
-				printf("flaglocal antes de insertar:%d y este key %s\n",hashes.flaglocal, $1.lexema);
+
 				insertarTabla( &hashes, $1.lexema, aux );
 
 

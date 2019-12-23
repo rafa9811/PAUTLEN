@@ -4,14 +4,13 @@ main
 
 	function int suma (int num1; int num2)
 	{
-		array int[2] a;
 		return num1+num2;
 	}
 
     x = 1;
 	y = 3;
 
-	resultado = suma (suma(3,4),y);
+	resultado = suma (suma(1,4),y);
 	printf resultado;
 
 
