@@ -5,22 +5,24 @@
 #include <limits.h>
 #include <string.h>
 
+/* Categoría de un símbolo: variable, parámetro de función o función */
 #define VARIABLE 0
 #define PARAMETRO 1
 #define FUNCION 2
-/* Categoría de un símbolo: variable, parámetro de función o función */
-// typedef enum { VARIABLE, PARAMETRO, FUNCION } CATEGORIA_SIMBOLO;
 
+
+/* Tipo de un símbolo: sólo se trabajará con enteros y booleanos */
 #define ENTERO 1
 #define BOOLEANO 0
-/* Tipo de un símbolo: sólo se trabajará con enteros y booleanos */
-// typedef enum { BOOLEANO, ENTERO } TIPO;
+
+
 
 /* Categoría de la variable: puede ser variable atómicas (escalar) o lista/array (vector) */
-// typedef enum { ESCALAR, VECTOR } CATEGORIA;
+
 #define ESCALAR 0
 #define VECTOR 1
 
+/* Estructura de símbolo que es lo que almacenamos como valor en la tabla hash. */
 typedef struct _simbolo {
     char identificador[64];             /* identificador */
     int cat_simbolo;                    /* categoría del simbolo */

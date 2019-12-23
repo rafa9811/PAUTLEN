@@ -1,4 +1,7 @@
 #include "hash.h"
+
+/*Estructura en la que almacenamos nuestras tablas hash, tanto la local como la global
+y la flaglocal para saber en cuál de ellas estamos. */
 struct _tablas_simbolos {
   hashtable_t *hash_global;
   hashtable_t *hash_local;

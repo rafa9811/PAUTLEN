@@ -1,0 +1,40 @@
+//Probar con mas de una funcion
+
+main
+{
+    int x, y, resultado;
+
+	function int suma (int num1; int num2)
+	{
+		return num1+num2;
+	}
+
+	function int fibonacci (int num1)
+	{
+		// Declaraciones
+		int res1, res2;
+
+		if ((num1 == 0))
+		{
+			return 0;
+		}
+		if ((num1 == 1))
+		{
+			return 1;
+		}
+		res1 = fibonacci (num1 - 1);
+		res2 = fibonacci (num1 - 2);
+		return res1 + res2;
+	}
+
+    x = 1;
+	y = 3;
+
+	resultado = suma (x,y);
+	printf resultado;
+
+	resultado = fibonacci(6);
+	printf resultado;
+
+
+}

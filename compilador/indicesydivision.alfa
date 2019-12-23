@@ -1,0 +1,14 @@
+main
+{
+    int x, y, resultado;
+
+	array int[3] vector;
+
+	resultado = 4/2;
+
+	vector[resultado] = 5;
+
+	printf vector[2];
+
+
+}
