@@ -7,213 +7,271 @@ segment .bss
 __esp resd 1
 ;D:	main
 ;D:	{
+;D:	array
 ;D:	int
 ;R10:	<tipo> ::= int
-;R9:	<clase_escalar> ::= <tipo>
-;R5:	<clase> ::= <clase_escalar>
-;D:	x
+;D:	[
+;D:	4
+;D:	]
+;R15:	<clase_vector> ::= array <tipo> [<constante_entera]
+;R7:	<clase> ::= <clase_vector>
+;D:	vector1
 ;R108:	<identificador> ::= TOK_IDENTIFICADOR
 ;declarar_variable
-_x resd 1
-;D:	,
-;D:	resultado
-;R108:	<identificador> ::= TOK_IDENTIFICADOR
-;declarar_variable
-_resultado resd 1
+_vector1 resd 4
 ;D:	;
 ;R18:	<identificadores> ::= <identificador>
-;R19:	<identificadores> ::= <identificador> , <identificadores>
 ;R4:	<declaracion> ::= <clase> <identificadores> ;
-;D:	function
+;D:	vector1
 ;R2:	<declaraciones> ::= <declaracion>
 ;escribir_segmento_codigo
 segment .text
 global main
 extern malloc, free
 extern scan_int, scan_boolean, print_int, print_boolean, print_blank, print_endofline, print_string
-;D:	int
-;R10:	<tipo> ::= int
-;D:	fibonacci
-;D:	(
-;D:	int
-;R10:	<tipo> ::= int
-;D:	num1
-;R108:	<identificador> ::= TOK_IDENTIFICADOR
-;R27:	<parametro_funcion> ::= <tipo> <identificador>
-;D:	)
-;R26:	<resto_parametros_funcion> ::= 
-;R25:	<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>
-;D:	{
-;D:	int
-;R10:	<tipo> ::= int
-;R9:	<clase_escalar> ::= <tipo>
-;R5:	<clase> ::= <clase_escalar>
-;D:	res1
-;R108:	<identificador> ::= TOK_IDENTIFICADOR
-;D:	,
-;D:	res2
-;R108:	<identificador> ::= TOK_IDENTIFICADOR
-;D:	;
-;R18:	<identificadores> ::= <identificador>
-;R19:	<identificadores> ::= <identificador> , <identificadores>
-;R4:	<declaracion> ::= <clase> <identificadores> ;
-;D:	if
-;R2:	<declaraciones> ::= <declaracion>
-;R28:	<declaraciones_funcion> ::= <declaraciones>
-_fibonacci:
-push ebp
-mov ebp, esp
-sub esp, 8
-;D:	(
-;D:	(
-;D:	num1
-;D:	==
-;R80:	<exp> ::= <identificador>
-;escribirParametro
-lea eax, [ebp + 8]
-push dword eax
+;R21:	<funciones> ::= 
+;escribir_inicio_main
+main:
+mov dword [__esp], esp
+;D:	[
 ;D:	0
 ;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
 ;escribir_operando
 push dword 0
 ;R100:	<constante> ::= <constante_entera>
 ;R81:	<exp> ::= <constante>
-;D:	)
-;R93:	<comparacion> ::= <exp> == <exp>
-;igual
-pop dword edx
-pop dword eax
-mov dword eax, [eax]
-cmp dword eax, edx
-je near igual_0
-push dword 0
-jmp near fin_igual_0
-igual_0:
-push dword 1
-fin_igual_0:
-;R83:	<exp> ::= ( <comparacion )
-;D:	)
-;D:	{
-;ifthen_inicio
-pop eax
-cmp eax, 0
-je fin_then_1
-;D:	return
-;D:	0
-;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
-;escribir_operando
-push dword 0
-;R100:	<constante> ::= <constante_entera>
-;R81:	<exp> ::= <constante>
-;D:	;
-;retornarFuncion
-pop eax
-mov esp, ebp
-pop ebp
-ret
-;R61:	<retorno_funcion> ::= return <exp>
-;R38:	<sentencia_simple> ::= <retorno_funcion>
-;R32:	<sentencia> ::= <sentencia_simple> ;
-;D:	}
-;R30:	<sentencias> ::= <sentencia>
-;ifthenelse_fin_then
-jmp near fin_ifelse_1
-fin_then_1:
-;D:	if
-;R50:	<condicional> ::= if ( <exp> ) { <sentencias> }
-;ifthenelse_fin
-fin_ifelse_1:
-;R40:	<bloque> ::= <condicional>
-;R33:	<sentencia> ::= <bloque>
-;D:	(
-;D:	(
-;D:	num1
-;D:	==
-;R80:	<exp> ::= <identificador>
-;escribirParametro
-lea eax, [ebp + 8]
-push dword eax
-;D:	1
-;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
-;escribir_operando
-push dword 1
-;R100:	<constante> ::= <constante_entera>
-;R81:	<exp> ::= <constante>
-;D:	)
-;R93:	<comparacion> ::= <exp> == <exp>
-;igual
-pop dword edx
-pop dword eax
-mov dword eax, [eax]
-cmp dword eax, edx
-je near igual_2
-push dword 0
-jmp near fin_igual_2
-igual_2:
-push dword 1
-fin_igual_2:
-;R83:	<exp> ::= ( <comparacion )
-;D:	)
-;D:	{
-;ifthen_inicio
-pop eax
-cmp eax, 0
-je fin_then_3
-;D:	return
-;D:	1
-;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
-;escribir_operando
-push dword 1
-;R100:	<constante> ::= <constante_entera>
-;R81:	<exp> ::= <constante>
-;D:	;
-;retornarFuncion
-pop eax
-mov esp, ebp
-pop ebp
-ret
-;R61:	<retorno_funcion> ::= return <exp>
-;R38:	<sentencia_simple> ::= <retorno_funcion>
-;R32:	<sentencia> ::= <sentencia_simple> ;
-;D:	}
-;R30:	<sentencias> ::= <sentencia>
-;ifthenelse_fin_then
-jmp near fin_ifelse_3
-fin_then_3:
-;D:	res1
-;R50:	<condicional> ::= if ( <exp> ) { <sentencias> }
-;ifthenelse_fin
-fin_ifelse_3:
-;R40:	<bloque> ::= <condicional>
-;R33:	<sentencia> ::= <bloque>
+;D:	]
+;R48:	<elemento_vector> ::= <identificador> [ <exp> ]
 ;D:	=
-;D:	fibonacci
-;D:	(
-;D:	num1
-;D:	-
-;R80:	<exp> ::= <identificador>
-;escribirParametro
-lea eax, [ebp + 8]
+;D:	10
+;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
+;escribir_operando
+push dword 10
+;R100:	<constante> ::= <constante_entera>
+;R81:	<exp> ::= <constante>
+;D:	;
+;R44:	<asignacion> ::= <elemento_vector> = <exp>
+;escribir_operando
+push dword 0
+;escribir_elemento_vector
+pop dword eax
+cmp eax, 0
+jl near fin_indice_fuera_rango
+cmp eax, 3
+jg near fin_indice_fuera_rango
+mov dword edx, _vector1
+lea eax, [edx + eax*4]
 push dword eax
-;operandoEnPilaAArgumento
-pop eax
-mov eax, [eax]
-push eax
+;asignarDestinoEnPila
+pop dword ebx
+pop dword eax
+mov dword [ebx], eax
+;R34:	<sentencia_simple> ::= <asignacion>
+;R32:	<sentencia> ::= <sentencia_simple> ;
+;D:	vector1
+;D:	[
 ;D:	1
 ;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
 ;escribir_operando
 push dword 1
 ;R100:	<constante> ::= <constante_entera>
 ;R81:	<exp> ::= <constante>
-;operandoEnPilaAArgumento
-;D:	)
-;R73:	<exp> ::= <exp> - <exp>
-;restar 
-pop dword edx
+;D:	*
+;D:	3
+;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
+;escribir_operando
+push dword 3
+;R100:	<constante> ::= <constante_entera>
+;R81:	<exp> ::= <constante>
+;D:	]
+;R75:	<exp> ::= <exp> * <exp>
+;multiplicar 
+pop dword ecx
+pop dword eax
+imul ecx
+cdq
+push dword eax
+;R48:	<elemento_vector> ::= <identificador> [ <exp> ]
+;D:	=
+;D:	40
+;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
+;escribir_operando
+push dword 40
+;R100:	<constante> ::= <constante_entera>
+;R81:	<exp> ::= <constante>
+;D:	;
+;R44:	<asignacion> ::= <elemento_vector> = <exp>
+;escribir_operando
+push dword 3
+;escribir_elemento_vector
+pop dword eax
+cmp eax, 0
+jl near fin_indice_fuera_rango
+cmp eax, 3
+jg near fin_indice_fuera_rango
+mov dword edx, _vector1
+lea eax, [edx + eax*4]
+push dword eax
+;asignarDestinoEnPila
+pop dword ebx
+pop dword eax
+mov dword [ebx], eax
+;R34:	<sentencia_simple> ::= <asignacion>
+;R32:	<sentencia> ::= <sentencia_simple> ;
+;D:	vector1
+;D:	[
+;D:	1
+;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
+;escribir_operando
+push dword 1
+;R100:	<constante> ::= <constante_entera>
+;R81:	<exp> ::= <constante>
+;D:	]
+;R48:	<elemento_vector> ::= <identificador> [ <exp> ]
+;D:	=
+;D:	5
+;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
+;escribir_operando
+push dword 5
+;R100:	<constante> ::= <constante_entera>
+;R81:	<exp> ::= <constante>
+;D:	;
+;R44:	<asignacion> ::= <elemento_vector> = <exp>
+;escribir_operando
+push dword 1
+;escribir_elemento_vector
+pop dword eax
+cmp eax, 0
+jl near fin_indice_fuera_rango
+cmp eax, 3
+jg near fin_indice_fuera_rango
+mov dword edx, _vector1
+lea eax, [edx + eax*4]
+push dword eax
+;asignarDestinoEnPila
+pop dword ebx
+pop dword eax
+mov dword [ebx], eax
+;R34:	<sentencia_simple> ::= <asignacion>
+;R32:	<sentencia> ::= <sentencia_simple> ;
+;D:	printf
+;D:	vector1
+;D:	[
+;D:	0
+;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
+;escribir_operando
+push dword 0
+;R100:	<constante> ::= <constante_entera>
+;R81:	<exp> ::= <constante>
+;D:	]
+;R48:	<elemento_vector> ::= <identificador> [ <exp> ]
+;R84:	<exp> ::= <elemento_vector>
+;escribir_elemento_vector
+pop dword eax
+cmp eax, 0
+jl near fin_indice_fuera_rango
+cmp eax, 3
+jg near fin_indice_fuera_rango
+mov dword edx, _vector1
+lea eax, [edx + eax*4]
+push dword eax
+;D:	;
+;R56:	<escritura> ::= printf <exp>
+;escribir
 pop dword eax
 mov dword eax, [eax]
-sub eax, edx
 push dword eax
-;R92:	<resto_lista_expresiones> ::= 
-;R89:	<lista_expresiones> ::= <exp> <resto_lista_expresiones>
-;R88:	<exp> ::= <identificador> ( <lista_expresiones> )
+call print_int
+call print_endofline
+add dword esp, 4
+;R36:	<sentencia_simple> ::= <escritura>
+;R32:	<sentencia> ::= <sentencia_simple> ;
+;D:	printf
+;D:	vector1
+;D:	[
+;D:	1
+;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
+;escribir_operando
+push dword 1
+;R100:	<constante> ::= <constante_entera>
+;R81:	<exp> ::= <constante>
+;D:	]
+;R48:	<elemento_vector> ::= <identificador> [ <exp> ]
+;R84:	<exp> ::= <elemento_vector>
+;escribir_elemento_vector
+pop dword eax
+cmp eax, 0
+jl near fin_indice_fuera_rango
+cmp eax, 3
+jg near fin_indice_fuera_rango
+mov dword edx, _vector1
+lea eax, [edx + eax*4]
+push dword eax
+;D:	;
+;R56:	<escritura> ::= printf <exp>
+;escribir
+pop dword eax
+mov dword eax, [eax]
+push dword eax
+call print_int
+call print_endofline
+add dword esp, 4
+;R36:	<sentencia_simple> ::= <escritura>
+;R32:	<sentencia> ::= <sentencia_simple> ;
+;D:	printf
+;D:	vector1
+;D:	[
+;D:	3
+;R104:	<constante_entera> ::= TOK_CONSTANTE_ENTERA
+;escribir_operando
+push dword 3
+;R100:	<constante> ::= <constante_entera>
+;R81:	<exp> ::= <constante>
+;D:	]
+;R48:	<elemento_vector> ::= <identificador> [ <exp> ]
+;R84:	<exp> ::= <elemento_vector>
+;escribir_elemento_vector
+pop dword eax
+cmp eax, 0
+jl near fin_indice_fuera_rango
+cmp eax, 3
+jg near fin_indice_fuera_rango
+mov dword edx, _vector1
+lea eax, [edx + eax*4]
+push dword eax
+;D:	;
+;R56:	<escritura> ::= printf <exp>
+;escribir
+pop dword eax
+mov dword eax, [eax]
+push dword eax
+call print_int
+call print_endofline
+add dword esp, 4
+;R36:	<sentencia_simple> ::= <escritura>
+;R32:	<sentencia> ::= <sentencia_simple> ;
+;D:	}
+;R30:	<sentencias> ::= <sentencia>
+;R31:	<sentencias> ::= <sentencia> <sentencias>
+;R31:	<sentencias> ::= <sentencia> <sentencias>
+;R31:	<sentencias> ::= <sentencia> <sentencias>
+;R31:	<sentencias> ::= <sentencia> <sentencias>
+;R31:	<sentencias> ::= <sentencia> <sentencias>
+;R1:	<programa> ::= main { <declaraciones> <funciones> <sentencias> }
+;escribir_fin
+jmp near fin
+fin_error_division:
+push dword msg_error_division
+call print_string
+add esp, 4
+call print_endofline
+jmp near fin
+fin_indice_fuera_rango:
+push dword msg_error_indice_vector
+call print_string
+add esp, 4
+call print_endofline
+jmp near fin
+fin:
+mov esp, [__esp]
+ret

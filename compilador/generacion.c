@@ -625,8 +625,6 @@ void llamarFuncion(FILE * fpasm, char * nombre_funcion, int num_argumentos) {
     return;
   }
   fprintf(fpasm, "call _%s\n", nombre_funcion);
-  fprintf(fpasm, "add esp, %d\n", num_argumentos*4);
-  fprintf(fpasm, "push dword eax\n");
 }
 
 

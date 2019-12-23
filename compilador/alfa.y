@@ -136,12 +136,12 @@ escritura2: {
 
 declaraciones: declaracion {
 	fprintf(out, ";R2:\t<declaraciones> ::= <declaracion>\n");
-	num_var_locales_actual++;
+
 	}
              | declaracion declaraciones {
 
 			 	fprintf(out, ";R3:\t<declaraciones> ::= <declaracion> <declaraciones>\n");
-				num_var_locales_actual++;
+
 
 			 }
 	;
@@ -212,6 +212,7 @@ funcion: fn_declaration sentencias TOK_LLAVEDERECHA {
 		  printf("%d\n", aux->num_parametros);
 
 		  aux = new_simbolo($1.lexema, FUNCION, aux->tipo, -1, -1, -1, num_parametros_actual, -1, num_var_locales_actual);
+		  printf("Insertando con flag_local %d y con esta clave %s\n", hashes.flaglocal, $1.lexema);
 		  insertarTabla(&hashes, $1.lexema, aux);
 		  flag_declaracion_funcion = 0;
 
@@ -229,7 +230,21 @@ fn_declaration: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESI
                   $$.tipo = $1.tipo;
 
                   //GENERACION DE CODIGO
+				  fprintf(out, ";declararFuncion\n");
 				  declararFuncion(out, $1.lexema, num_var_locales_actual);
+
+				 //Actualizamos también la función en la tabla local con número de parámetros por si la queremos llamar otra vez.
+				 aux = buscarTabla(&hashes, $1.lexema);
+				 if(aux==NULL){
+				   printf("Error semántico. La función ya estaba declarada pero no la encontramos.\n");
+				   return -1;
+				 }
+				 printf("%d\n", num_parametros_actual);
+				 printf("%d\n", aux->num_parametros);
+
+				 aux = new_simbolo($1.lexema, FUNCION, aux->tipo, -1, -1, -1, num_parametros_actual, -1, num_var_locales_actual);
+				 printf("Insertando con flag_local %d y con esta clave %s\n", hashes.flaglocal, $1.lexema);
+				 insertarTabla(&hashes, $1.lexema, aux);
 
 
 
@@ -334,7 +349,9 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
 		}
 		else{
 			fprintf(out, ";escribirVariableLocal\n");
+			printf("POSICION: %d\n", aux->posicion);
 			escribirVariableLocal(out, aux->posicion);
+
 		}
 
 		fprintf(out, ";asignarDestinoEnPila\n");
@@ -714,6 +731,8 @@ exp: exp TOK_MAS exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");
 	  if(flag_llamada_funcion == 1){
 	  	fprintf(out, ";operandoEnPilaAArgumento\n");
 	  	operandoEnPilaAArgumento(out, 1);
+		//Hemos de indicar que lo que ya tenemos aquí no es una dirección, sino un valor fijo.
+		$$.es_direccion = 0;
 	  }
 
 
@@ -778,6 +797,8 @@ exp: exp TOK_MAS exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");
 
 			fprintf(out,";operandoEnPilaAArgumento\n");
 	  	  	operandoEnPilaAArgumento(out, 1);
+			//Hemos de indicar que lo que ya tenemos aquí no es una dirección, sino un valor fijo.
+			$$.es_direccion = 0;
 	  	  }
 
 
@@ -792,13 +813,15 @@ exp: exp TOK_MAS exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");
 		return -1;
 		}
 		if(num_parametros_llamada != aux->num_parametros){
-		printf("%d %d en clave %s\n", num_parametros_llamada, aux->num_parametros, aux->identificador);
+		printf("llamada %d  declaracion %d en clave %s\n", num_parametros_llamada, aux->num_parametros, aux->identificador);
 			printf("Error semántico. La llamada a función no tiene el número necesario de argumentos.\n");
 			return -1;
 		}
 
 		fprintf(out, ";llamarFuncion\n");
 		llamarFuncion(out, $1.lexema, num_parametros_llamada);
+		fprintf(out, ";limpiarPila\n");
+		limpiarPila(out, num_parametros_llamada);
 		num_parametros_llamada = 0;
 		$$.es_direccion = 0;
 		flag_llamada_funcion = 0;
@@ -1024,6 +1047,7 @@ identificador: TOK_IDENTIFICADOR {
 					if(flag_declaracion_funcion==1){
 						 aux = new_simbolo($1.lexema, VARIABLE, tipo_actual, ESCALAR, -1, 1, -1, num_var_locales_actual, -1);
 						 insertarTabla( &hashes, $1.lexema, aux );
+						 num_var_locales_actual++;
 					 }
 					 else{
 						 aux = new_simbolo($1.lexema, VARIABLE, tipo_actual, clase_actual, -1, longitud_actual, -1, -1, -1);
